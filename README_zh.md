@@ -51,14 +51,10 @@
 
 ## webdav 兼容性
 
+litmus 测试
+
 ```sh
-nix-shell -p litmus
-litmus -k webdav://yh:123@192.168.1.101:9000
+litmus -k webdav://username:password@192.168.1.101:9000
 ```
 
-- 关注 https://github.com/hacdias/webdav/issues/218 #RFC2518
-
-## webdav fork
-
-- webdav fork自 [hacdias/webdav/](https://github.com/hacdias/webdav/commit/04cee682fb42c7f684eba106c14aff3ba2fa20c0)
-- ai给校验 到 https://github.com/hacdias/webdav/commit/5676a1c3823a3643a7025feeb85157f83cd91b0f
+- webdav 上游 [emersion/go-webdav](github.com/emersion/go-webdav)
