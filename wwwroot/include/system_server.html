@@ -1,0 +1,72 @@
+<div id="system_server" style="padding-top: 4rem;"></div>
+<div class="container-fluid py-3">
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="mb-4">服务器设置</h3>
+      <div class="mb-3">
+        <label for="HttpPort" class="form-label">HTTP 端口</label>
+        <input type="number" class="form-control" id="HttpPort" data-bind="Server.HttpPort">
+      </div>
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="HttpsEnable" data-bind="Server.HttpsEnable">
+          <label class="form-check-label" for="HttpsEnable">启用 HTTPS</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="HttpsPort" class="form-label">HTTPS 端口</label>
+        <input type="number" class="form-control" id="HttpsPort" data-bind="Server.HttpsPort">
+      </div>
+      <div class="mb-3">
+        <label for="TlsCert" class="form-label">TLS 证书路径</label>
+        <input type="text" class="form-control" id="TlsCert" data-bind="Server.TlsCert">
+      </div>
+      <div class="mb-3">
+        <label for="TlsKey" class="form-label">TLS 私钥路径</label>
+        <input type="text" class="form-control" id="TlsKey" data-bind="Server.TlsKey">
+      </div>
+      <div class="mb-3">
+        <label for="WebUIPrefix" class="form-label">WebUI 前缀</label>
+        <input type="text" class="form-control" id="WebUIPrefix" data-bind="Server.WebUIPrefix">
+      </div>
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="WebuiEnable" data-bind="Server.WebuiEnable">
+          <label class="form-check-label" for="WebuiEnable">启用 WebUI</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="WebDavEnable" data-bind="Server.WebDavEnable">
+          <label class="form-check-label" for="WebDavEnable">启用 WebDAV</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="DefaultStaticFileServicePrefix" class="form-label">静态文件服务前缀 <a
+            href="#system_webuiCDN">修改此项后可能要同步修改CDN配置</a></label>
+        <input type="text" class="form-control" id="DefaultStaticFileServicePrefix"
+          data-bind="Server.DefaultStaticFileServicePrefix">
+      </div>
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="DefaultStaticFileServiceEnable"
+            data-bind="Server.DefaultStaticFileServiceEnable">
+          <label class="form-check-label" for="DefaultStaticFileServiceEnable">启用静态文件服务</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="DefaultStaticFileServiceRoot" class="form-label">静态文件服务根目录</label>
+        <input type="text" class="form-control" id="DefaultStaticFileServiceRoot"
+          data-bind="Server.DefaultStaticFileServiceRoot">
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+</div>

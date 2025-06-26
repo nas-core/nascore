@@ -1,0 +1,62 @@
+<div id="ThirdPartyExtDdnsGO" style="padding-top: 4rem;"></div>
+<div class="container-fluid py-3">
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h3 class="mb-4">DDNS-GO 配置</h3>
+
+
+      <div class="mb-3">
+        <label for="ThirdPartyExtDdnsGODownLoadlink" class="form-label">DownLoadlink</label>
+        <input type="text" class="form-control" id="ThirdPartyExtDdnsGODownLoadlink"
+          data-bind="ThirdPartyExt.DdnsGO.DownLoadlink">
+      </div>
+      <div class="mb-3">
+        <label for="ThirdPartyExtDdnsGOGitHubDownloadMirror" class="form-label">GitHubDownloadMirror</label>
+        <input type="text" class="form-control" id="ThirdPartyExtDdnsGOGitHubDownloadMirror"
+          data-bind="ThirdPartyExt.DdnsGO.GitHubDownloadMirror">
+      </div>
+
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="IsDDnsGOProxyEnable"
+            data-bind="ThirdPartyExt.DdnsGO.IsDDnsGOProxyEnable">
+          <label class="form-check-label" for="IsDDnsGOProxyEnable">启用 DDNS-GO 反向代理</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="ThirdPartyExtReverseproxyUrl" class="form-label">ReverseproxyUrl
+          （http://NasCore/{{.PrefixDdnsGo}}会反向代理这个地址
+          反响代理ddns-go）</label>
+        <input type="text" class="form-control" id="ThirdPartyExtReverseproxyUrl"
+          data-bind="ThirdPartyExt.DdnsGO.ReverseproxyUrl">
+      </div>
+
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="DDNSGOAutoMountEnable"
+            data-bind="ThirdPartyExt.DdnsGO.AutoStartEnable">
+          <label class="form-check-label" for="DDNSGOAutoMountEnable">启用 DDNS-GO 跟随启动</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="DdnsGOBinPath" class="form-label">可执行文件路径</label>
+        <input type="text" class="form-control" id="DdnsGOBinPath" data-bind="ThirdPartyExt.DdnsGO.DdnsGOBinPath">
+      </div>
+      <div class="mb-3">
+        <label for="ThirdPartyExtDdnsGOConfigFilePath" class="form-label">ConfigFilePath</label>
+        <input type="text" class="form-control" id="ThirdPartyExtDdnsGOConfigFilePath"
+          data-bind="ThirdPartyExt.DdnsGO.ConfigFilePath">
+        <button class="btn btn-secondary" onclick="alert('暂不支持')">重置DDNSGO密码</button>
+      </div>
+
+      <div>
+        DDNS-GO 可以下载到和nascore 同目录下，并尝试解压，你也可以用其他方式自行下载安装。<br>
+        如果自行安装的ddns-go 记得修改路径，或者自行安装成服务模式。
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
