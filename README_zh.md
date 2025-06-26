@@ -1,6 +1,6 @@
 # nascore
 
-[English](README.md) | [中文](README_zh.md)
+[English](README.md) | 中文
 
 一个轻量可以扩展的类似nextcloud filebrowser的项目
 
