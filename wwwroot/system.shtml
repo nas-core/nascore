@@ -47,6 +47,9 @@
 
       <!--#include file="include/system_UserManager.html" -->
 
+
+      <!--#include file="include/system_DownloadMirror.html" -->
+
       <!--#include file="include/system_rclone.html" -->
       <!--#include file="include/system_ddnsgo.html" -->
       <!--#include file="include/system_AdGuard.html" -->
@@ -54,7 +57,8 @@
 
       <div id="SettingSave">
         <button type="button" class="btn btn-primary" onclick="javascript:saveGlobalSetting()">保存设置</button>
-        <a href="./panel.shtml" class="btn btn-secondary">返回文件管理</a>
+
+        <a href="./panel.shtml" class="btn btn-secondary" style="margin-left: 2rem;">返回文件管理</a>
       </div>
       <style>
         #SettingSave {
@@ -77,3 +81,6 @@
 </div>
 <script src="js/Settings_system.js"></script>
 <script src="js/setting_usermanager.js"></script>
+<script src="js/api.js"></script>
+<script src="js/system_get_ddns_go.js"></script>
+<script src="js/system_get_rclone.js"></script>

@@ -1,7 +1,7 @@
 <div id="system_server" style="padding-top: 4rem;"></div>
 <div class="container-fluid py-3">
   <div class="row">
-    <div class="col-md-6">
+    <div class="settingContainer">
       <h3 class="mb-4">服务器设置</h3>
       <div class="mb-3">
         <label for="HttpPort" class="form-label">HTTP 端口</label>
@@ -58,6 +58,9 @@
         <label for="DefaultStaticFileServiceRoot" class="form-label">静态文件服务根目录</label>
         <input type="text" class="form-control" id="DefaultStaticFileServiceRoot"
           data-bind="Server.DefaultStaticFileServiceRoot">
+      </div>
+      <div class="mb-3">
+        <button type="button" class="btn btn-primary" data-bind="click: function() { Server.save(); }">下载静态资源文件</button>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <div id="ThirdPartyExtadguardhome" style="padding-top: 4rem;"></div>
 <div class="container-fluid py-3">
   <div class="row mt-4">
-    <div class="col-md-6">
+    <div class="settingContainer">
       <h3 class="mb-4">ADGuard-home 配置</h3>
       <div class="mb-3">
         <div class="form-check form-switch">
@@ -16,12 +16,6 @@
           反响代理ADGuard）</label>
         <input type="text" class="form-control" id="ThirdPartyExtAdGuardReverseproxyUrl"
           data-bind="ThirdPartyExt.AdGuard.ReverseproxyUrl">
-      </div>
-
-      <div class="mb-3">
-        <label for="ThirdPartyExtAdGuardGitHubDownloadMirror" class="form-label">GitHubDownloadMirror</label>
-        <input type="text" class="form-control" id="ThirdPartyExtAdGuardGitHubDownloadMirror"
-          data-bind="ThirdPartyExt.AdGuard.GitHubDownloadMirror">
       </div>
 
       <div class="mb-3">
@@ -41,7 +35,9 @@
         NasCore 支持自动更新ADGuard-home的upstream_dns_file分流规则文件，详情请参考<a href="https://github.com/joyanhui/adguardhome-rules"
           target="_blank">adguardhome-rules
           File</a><br>
-        NasCore 暂不支持ADGuard的自动安装和跟随启动，你可以用docker或者包管理器或者ADGuard官方安装脚本安装<br>
+        NasCore 暂不支持ADGuard的自动安装和跟随启动，你可以用docker或者包管理器或者<a
+          href="https://adguard.com/zh_cn/adguard-linux/overview.html#instructions" target="_blank">ADGuard官方安装脚本</a>
+        安装<br>
         因为adguardhome去广告功能比较完善，并且有webui,性能也够好，所以NasCore暂时不打算支持mosdns，<br>
       </div>
     </div>
