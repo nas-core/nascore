@@ -1,4 +1,4 @@
-package isDevMode
+package isdevmode
 
 import "os"
 
