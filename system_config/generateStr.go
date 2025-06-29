@@ -9,7 +9,8 @@ import (
 
 func GenerateStr(typeInt int) string {
 	baseStr, err := os.Hostname()
-	tmpHash := "NasCore.eu.org"
+	tmpHash := "nascore.eu.org"
+
 	if err != nil {
 		baseStr = tmpHash
 	}
@@ -21,6 +22,9 @@ func GenerateStr(typeInt int) string {
 	case 2:
 		io.WriteString(h, baseStr+tmpHash)
 		baseStr = fmt.Sprintf("%x", h.Sum(nil))
+	case 3:
+		io.WriteString(h, baseStr+tmpHash+"https://nascore.eu.org/api/")
+		baseStr = fmt.Sprintf("%x", h.Sum(nil))
 	}
-	return baseStr + "-" + tmpHash
+	return baseStr
 }
