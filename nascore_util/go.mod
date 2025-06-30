@@ -1,4 +1,4 @@
-module github.com/nas-core/nascore
+module github.com/nas-core/nascore/nascore_util
 
 go 1.24.3
 
