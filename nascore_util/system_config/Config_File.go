@@ -13,8 +13,15 @@ type SysCfg struct {
 	WebUIPubLicCdn WebUIStru           `mapstructure:"WebUIPubLicCdn"`
 	Users          []map[string]string `mapstructure:"users"`
 	//	WebSites       []WebsiteEntry      `mapstructure:"WebSites"`
-	Limit         LimitStru         `mapstructure:"Limit"`
+	Limit LimitStru `mapstructure:"Limit"`
+
+	NascoreExt    NascoreExtStru    `mapstructure:"NascoreExt"`
 	ThirdPartyExt ThirdPartyExtStru `mapstructure:"ThirdPartyExt"`
+}
+type NascoreExtStru struct {
+	UserID         string `mapstructure:"UserID"`
+	UserKey        string `mapstructure:"UserKey"`
+	UnixSocketPath string `mapstructure:"UnixSocketPath"`
 }
 
 type ThirdPartyExtStru struct {
@@ -168,8 +175,7 @@ type ServerStru struct {
 	DefaultStaticFileServiceEnable      bool   `mapstructure:"DefaultStaticFileServiceEnable"`
 	DefaultStaticFileServiceRoot        string `mapstructure:"DefaultStaticFileServiceRoot"`
 	DefaultStaticFileServiceDownloadUrl string `mapstructure:"DefaultStaticFileServiceDownloadUrl"`
-
-	TmpFilePath string `mapstructure:"TmpFilePath"`
+	UnixSocketFilePath                  string `mapstructure:"UnixSocketFilePath"`
 }
 type LimitStru struct {
 	OnlineEditMaxSizeKB        int64 `mapstructure:"OnlineEditMaxSizeKB"`
@@ -193,9 +199,8 @@ func newDefaultServerConfig() ServerStru {
 		DefaultStaticFileServicePrefix:      "/@static/",
 		DefaultStaticFileServiceEnable:      true,
 		DefaultStaticFileServiceRoot:        "./static/",
-		DefaultStaticFileServiceDownloadUrl: "https://raw.githubusercontent.com/nas-core/nascore/refs/heads/main/static.tarz",
-
-		TmpFilePath: "/tmp",
+		DefaultStaticFileServiceDownloadUrl: "https://github.com/nas-core/nascore_static/archive/refs/heads/main.zip",
+		UnixSocketFilePath:                  "/tmp/nascore.socket",
 	}
 }
 
