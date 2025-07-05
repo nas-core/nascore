@@ -3,7 +3,6 @@ module github.com/nas-core/nascore/nascore_handler_http
 go 1.24.3
 
 require (
-	github.com/emersion/go-webdav v0.6.0
 	github.com/nas-core/nascore/nascore_util v0.0.0-20250701004656-caf557e22cf8
 	go.uber.org/zap v1.27.0
 )
