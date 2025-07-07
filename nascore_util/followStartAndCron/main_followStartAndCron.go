@@ -71,9 +71,7 @@ func FollowStartAndCronMain_forStateless_andForMachine(nsCfg *system_config.SysC
  * 计划任务主函数
  */
 func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
-	// 防止 cronFunc 在同一进程内并发执行。
-	// 在无服务器模式下，确保它每个请求运行一次。
-	// 在非无服务器模式下，防止多个 cron goroutine 运行。
+	// 防止 cronFunc 在同一进程内并发执行。 在无服务器模式下，确保它每个请求运行一次。 在非无服务器模式下，防止多个 cron goroutine 运行。
 	if !atomic.CompareAndSwapInt32(&isCheckingCron, 0, 1) {
 		return // 另一个 cronFunc 正在运行或被检查
 	}
