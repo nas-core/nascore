@@ -20,10 +20,14 @@ func SubNasCoreVodSoket(subPathPrefix string, unixSocketPath *string, cfg *syste
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-
+		socketFilePathValue := *unixSocketPath
+		if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
+			socketFilePathValue += "/"
+		}
+		socketFilePathValue += "nascore_vod.sock"
 		transport := &http.Transport{
 			Dial: func(_, _ string) (net.Conn, error) {
-				return net.Dial("unix", *unixSocketPath)
+				return net.Dial("unix", socketFilePathValue)
 			},
 			ResponseHeaderTimeout: 60 * time.Second, // 设置等待后端响应头的超时时间
 			IdleConnTimeout:       90 * time.Second, // 设置连接保持空闲的最长时间

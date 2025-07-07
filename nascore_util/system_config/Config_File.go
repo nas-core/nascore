@@ -200,7 +200,7 @@ func newDefaultServerConfig() ServerStru {
 		DefaultStaticFileServiceEnable:      true,
 		DefaultStaticFileServiceRoot:        "./static/",
 		DefaultStaticFileServiceDownloadUrl: "https://github.com/nas-core/nascore_static/archive/refs/heads/main.zip",
-		UnixSocketFilePath:                  "/tmp/nascore.socket",
+		UnixSocketFilePath:                  "/tmp/nascore-socket",
 	}
 }
 
