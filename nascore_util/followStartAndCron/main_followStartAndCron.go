@@ -20,6 +20,8 @@ var (
 	isDdnsSGOFollowStart     int32
 	isCaddy2FollowStart      int32
 	isOpenlistFollowStart    int32
+
+	isExtProgramFollowStart int32
 )
 
 // 防止独立部署的情况 没有请求的时候 自动任务不执行
@@ -96,6 +98,11 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 		if nsCfg.ThirdPartyExt.Openlist.AutoStartEnable && atomic.LoadInt32(&isOpenlistFollowStart) == 0 {
 			atomic.StoreInt32(&isOpenlistFollowStart, 1)
 			go OpenlistFollowStart(nsCfg, logger)
+		}
+		// 扩展程序
+		if atomic.LoadInt32(&isExtProgramFollowStart) == 0 {
+			atomic.StoreInt32(&isExtProgramFollowStart, 1)
+			go Nascore_extended_followStart(nsCfg, logger)
 		}
 		time.Sleep(time.Second)
 		atomic.StoreInt32(&isLoopOneSecondrun, 0)
