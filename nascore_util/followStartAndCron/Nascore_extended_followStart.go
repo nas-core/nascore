@@ -48,7 +48,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 	for _, path := range searchPaths {
 		files, err := os.ReadDir(path)
 		if err != nil {
-			logger.Errorf("读取目录失败: %s, 错误: %v", path, err)
+			logger.Errorf("err read: %s, err: %v", path, err)
 			continue // 忽略此目录，继续下一个
 		}
 
@@ -59,7 +59,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 				cmdParams := []string{} // 命令参数
 				switch {
 				case strings.Contains(strings.ToLower(fileName), "tv"), strings.Contains(strings.ToLower(fileName), "vod"):
-					cmdParams = []string{"-s", socketFilePathValue + "nascore_tv.socket", "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
+					cmdParams = []string{"-s", socketFilePathValue + system_config.NasCoreVodSocketPath, "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
 					executeIfMatching(filePath, fileName, cmdParams, logger)
 				}
 

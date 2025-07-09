@@ -97,7 +97,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	// 热重载配置。仅在未重新加载时尝试。
 	if atomic.CompareAndSwapInt32(&isReloadingNascoreToml, 0, 1) {
-		logger.Info("Attempting to hot reload nascore.toml.")
+		// logger.Info("Attempting to hot reload nascore.toml.")
 		reloadNascoreToml(nsCfg)
 		atomic.StoreInt32(&isReloadingNascoreToml, 0)
 	}

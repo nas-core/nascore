@@ -24,7 +24,7 @@ func SubNasCoreVodSoket(subPathPrefix string, unixSocketPath *string, cfg *syste
 		if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
 			socketFilePathValue += "/"
 		}
-		socketFilePathValue += "nascore_vod.sock"
+		socketFilePathValue += system_config.NasCoreVodSocketPath
 		transport := &http.Transport{
 			Dial: func(_, _ string) (net.Conn, error) {
 				return net.Dial("unix", socketFilePathValue)
