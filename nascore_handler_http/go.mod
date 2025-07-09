@@ -2,12 +2,14 @@ module github.com/nas-core/nascore/nascore_handler_http
 
 go 1.24.3
 
-require go.uber.org/zap v1.27.0
+require (
+	github.com/nas-core/nascore/nascore_util v0.0.0-20250709041512-dfa7ab8ca673
+	go.uber.org/zap v1.27.0
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
-	github.com/nas-core/nascore/nascore_util v0.0.0-20250709041512-dfa7ab8ca673 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
