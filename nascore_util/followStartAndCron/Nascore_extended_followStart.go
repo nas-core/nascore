@@ -49,7 +49,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 	for _, path := range searchPaths {
 		files, err := os.ReadDir(path)
 		if err != nil {
-			logger.Errorf("err read: %s, err: %v", path, err)
+			// logger.Errorf("err read: %s, err: %v", path, err)
 			continue // 忽略此目录，继续下一个
 		}
 

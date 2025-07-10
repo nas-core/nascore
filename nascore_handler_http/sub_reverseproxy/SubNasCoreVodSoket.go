@@ -12,15 +12,18 @@ import (
 	"go.uber.org/zap"
 )
 
-func SubNasCoreVodSocket(subPathPrefix string, unixSocketPath *string, cfg *system_config.SysCfg, logger *zap.SugaredLogger, qpsCounter *uint64) http.HandlerFunc {
+func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger, qpsCounter *uint64) http.HandlerFunc {
+	logger.Info("SubNasCoreVodSocket started")
+
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Info("SubNasCoreVodSocket started url path", r.URL.Path)
 		target, err := url.Parse("http://unix")
 		if err != nil {
 			logger.Errorw("failed to parse target URL", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		socketFilePathValue := *unixSocketPath
+		socketFilePathValue := nsCfg.Server.UnixSocketFilePath
 		if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
 			socketFilePathValue += "/"
 		}
@@ -36,18 +39,7 @@ func SubNasCoreVodSocket(subPathPrefix string, unixSocketPath *string, cfg *syst
 		proxy := httputil.NewSingleHostReverseProxy(target)
 		proxy.Transport = transport
 
-		// 如果 r.URL.Path 里面不包含 字符串 proxy/
-		// 特指 类似 http://localhost:9000/@nascore_vod/proxy/https%3A%2F%2Fmovie.douban.com%2Fj%2Fsearch_subjects%3Ftype%3Dmovie%26tag%3D%E7%83%AD%E9%97%A8%26sort%3Drecommend%26page_limit%3D16%26page_start%3D0
-		/*
-		   if !strings.Contains(r.URL.Path, "proxy/") {
-		   			r.URL.Path = strings.TrimPrefix(r.URL.Path, subPathPrefix)
-		   			if r.URL.Path == "" {
-		   				r.URL.Path = "/"
-		   			}
-		   		}
-		*/
-
-		r.URL.Path = strings.TrimPrefix(r.URL.Path, subPathPrefix)
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, system_config.PrefixNasCoreTv)
 		if r.URL.Path == "" {
 			r.URL.Path = "/"
 		}
