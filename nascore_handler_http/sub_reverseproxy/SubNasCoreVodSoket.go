@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/nas-core/nascore/nascore_util/system_config"
@@ -39,7 +38,7 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 		proxy := httputil.NewSingleHostReverseProxy(target)
 		proxy.Transport = transport
 
-		r.URL.Path = strings.TrimPrefix(r.URL.Path, system_config.PrefixNasCoreTv)
+		//	r.URL.Path = strings.TrimPrefix(r.URL.Path, system_config.PrefixNasCoreTv)
 		if r.URL.Path == "" {
 			r.URL.Path = "/"
 		}
