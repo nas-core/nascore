@@ -149,7 +149,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 		}
 		// 扩展程序
 		if atomic.CompareAndSwapInt32(&isExtProgramFollowStart, 0, 1) {
-			logger.Info("Starting Nascore_extended_followStart.")
+			logger.Info("Starting nascore_vod")
 			if nsCfg.Server.IsRunInServerLess {
 				Nascore_extended_followStart(nsCfg, logger)
 			} else {

@@ -28,7 +28,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 	var searchPaths []string
 	executablePath, err := os.Executable()
 	if err != nil {
-		logger.Errorf("获取执行文件路径失败: %v", err)
+		logger.Errorf("get executable path failed: %v", err)
 		return err
 	}
 	currentDir := filepath.Dir(executablePath)

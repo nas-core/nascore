@@ -12,7 +12,7 @@ import (
 )
 
 func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger, qpsCounter *uint64) http.HandlerFunc {
-	logger.Info("SubNasCoreVodSocket started")
+	// logger.Info("SubNasCoreVodSocket started")
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger.Info("SubNasCoreVodSocket started url path", r.URL.Path)
