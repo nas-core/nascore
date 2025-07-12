@@ -23,11 +23,6 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 		if r.URL.Path == "admin_setting.html" {
 			userInfo, err := user_helper.ValidateTokenAndGetUserInfo(r, nsCfg)
 			if err != nil {
-				accessTokenCookie, err := r.Cookie("cookieName")
-				if err != nil {
-					logger.Errorln("get cookies err", err)
-				}
-				logger.Info("accessTokenCookie", accessTokenCookie)
 				logger.Errorw("token get err", "error", err) // [auth]
 				index_and_favicon.RenderPage(w, "Token validation failed ", "Token validation failed ", "无法验证您的身份，请重新登录。")
 				return
