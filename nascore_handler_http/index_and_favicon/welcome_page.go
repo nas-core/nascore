@@ -27,16 +27,17 @@ func init() {
 
 // WelcomePageData 定义了传递给欢迎页面的数据结构
 type WelcomePageData struct {
-	WebUIPrefix string
+	WebUIPrefix     string
+	PrefixNasCoreTv string
 }
 
-func HanderWellcome(cfg *system_config.SysCfg, logger *zap.SugaredLogger, qpsCounter *uint64) http.HandlerFunc {
+func HanderWellcome(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger, qpsCounter *uint64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 		// 准备数据
 		data := WelcomePageData{
-			WebUIPrefix: cfg.Server.WebUIPrefix,
+			WebUIPrefix: nsCfg.Server.WebUIPrefix, PrefixNasCoreTv: system_config.PrefixNasCoreTv,
 		}
 
 		// 执行模板并写入响应
