@@ -20,6 +20,7 @@ func SubDDnsGO(subPathPrefix string, backEndUrl *string, cfg *system_config.SysC
 				"DDNSGO proxy is not enabled",
 				"The reverse proxy function of DDNSGO is not enabled. Please enable it in the background or configuration file.",
 				"DDNSGO 反向代理功能没有启用。请到后台或者配置文件中启用。",
+				"system.shtml#ThirdPartyExtDdnsGO", "Goto",
 			)
 			return
 		}
@@ -49,9 +50,7 @@ func SubDDnsGO(subPathPrefix string, backEndUrl *string, cfg *system_config.SysC
 			},
 			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
 				logger.Errorf("DDNS-GO proxy backend error: %v", err)
-				englishMsg := "DDNS-GO might not be running. Please start it or enable auto-start. If already running, ensure Nascore server/container/VM can access the backend URL."
-				chineseMsg := "DDNS-GO 可能未启动。请手动启动或开启随启动。如果已启动，请确保 Nascore 服务器/容器/虚拟机可访问后端地址。"
-				index_and_favicon.RenderPage(w, "DDNS-GO Backend Error 502", englishMsg+"     --------------------ErrInfo--------------------  "+backendfullURL.String()+" ------------ "+err.Error(), chineseMsg)
+				index_and_favicon.RenderPage(w, "DDNS-GO Backend Error 502", "DDNS-GO might not be running. Please start it or enable auto-start. If already running, ensure Nascore server/container/VM can access the backend URL.     --------------------ErrInfo--------------------  "+backendfullURL.String()+" ------------ "+err.Error(), "DDNS-GO 可能未启动。请手动启动或开启随启动。如果已启动，请确保 Nascore 服务器/容器/虚拟机可访问后端地址。", "system.shtml#ThirdPartyExtDdnsGO", "Goto")
 			},
 		}
 		proxy.ServeHTTP(w, r)

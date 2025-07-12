@@ -26,19 +26,23 @@ type errorPageData struct {
 	Title              string
 	EnglishDescription string
 	ChineseDescription string
+	GotoLink           string
+	GotoText           string
 }
 
 // RenderPage 生成并写入一个美观的 HTML 页面
 // title：页面标题。
 // englishDescription：英文错误描述。
 // chineseDescription：中文错误描述。
-func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescription string) {
+func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescription, GotoLink, GotoText string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	data := errorPageData{
 		Title:              title,
 		EnglishDescription: englishDescription,
 		ChineseDescription: chineseDescription,
+		GotoLink:           GotoLink,
+		GotoText:           GotoText,
 	}
 
 	// 执行模板并写入响应

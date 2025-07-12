@@ -212,7 +212,9 @@
     <div class="error-code">:(</div>
     <p>{{.EnglishDescription}}</p>
     <p>{{.ChineseDescription}}</p>
-    <a href="{{.WebUIPrefix}}" class="action-link">returl index</a>
+    {{if .GotoText}}
+    <a href="{{.GotoLink}}" class="action-link">{{.GotoText}}</a>
+    {{end}}
   </div>
 
 </body>

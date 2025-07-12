@@ -19,17 +19,17 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 	// logger.Info("SubNasCoreVodSocket started")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// logger.Info("SubNasCoreVodSocket started url path ", r.URL.Path)
+		userInfo, err := user_helper.ValidateTokenAndGetUserInfo(r, nsCfg)
+		if err != nil {
+			logger.Errorw("token get err", "error", err) // [auth]
+			index_and_favicon.RenderPage(w, "Token validation failed ", "Token validation failed ", "无法验证您的身份，请先登陆。", "login.shtml", "Goto Login")
+			return
+		}
+
 		if r.URL.Path == "admin_setting.html" {
-			userInfo, err := user_helper.ValidateTokenAndGetUserInfo(r, nsCfg)
-			if err != nil {
-				logger.Errorw("token get err", "error", err) // [auth]
-				index_and_favicon.RenderPage(w, "Token validation failed ", "Token validation failed ", "无法验证您的身份，请重新登录。")
-				return
-			}
 			if !userInfo.IsAdmin {
 				logger.Warnw("用户不是管理员", "user", userInfo.Username) // [auth]
-				index_and_favicon.RenderPage(w, "Insufficient permissions", "Insufficient permissions", "您不是管理员，无法访问此页面。")
+				index_and_favicon.RenderPage(w, "Insufficient permissions", "Insufficient permissions", "您不是管理员，无法访问此页面。", "login.shtml", "Goto Login")
 				return
 			}
 		}
@@ -43,14 +43,14 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 		// 检查 Socket 文件是否存在
 		if _, err := os.Stat(socketFilePathValue); os.IsNotExist(err) {
 			logger.Errorw("socket 文件不存在", "path", socketFilePathValue, "error", err) // [socket]
-			index_and_favicon.RenderPage(w, "服务不可用", "Service Unavailable", fmt.Sprintf("后端服务 socket 文件 %s 不存在。", socketFilePathValue))
+			index_and_favicon.RenderPage(w, "服务不可用", "Service Unavailable", fmt.Sprintf("后端服务 socket 文件 %s 不存在。", socketFilePathValue), "#", "")
 			return
 		}
 
 		target, err := url.Parse("http://unix")
 		if err != nil {
 			logger.Errorw("failed to parse target URL", "error", err) // [proxy]
-			index_and_favicon.RenderPage(w, "502 错误", "Bad Gateway", "无法连接到后端服务。")
+			index_and_favicon.RenderPage(w, "502 错误", "Bad Gateway", "无法连接到后端服务。", "#", "")
 			return
 		}
 
@@ -66,8 +66,8 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 		proxy.Transport = transport
 
 		proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-			logger.Errorw("反向代理出错", "error", err) // [proxy]
-			index_and_favicon.RenderPage(w, "502 错误", "Bad Gateway", "后端服务无响应，可能没有安装nascore_vod扩展 没启动。")
+			logger.Errorw("proxy.ErrorHandler err ", "error", err) // [proxy]
+			index_and_favicon.RenderPage(w, "502 错误", "Bad Gateway", "后端服务无响应，可能没有安装nascore_vod扩展 没启动。", "login.shtml", "Goto Login")
 		}
 
 		//	r.URL.Path = strings.TrimPrefix(r.URL.Path, system_config.PrefixNasCoreTv)

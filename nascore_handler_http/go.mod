@@ -3,7 +3,6 @@ module github.com/nas-core/nascore/nascore_handler_http
 go 1.24.4
 
 require (
-	github.com/joyanhui/golang-pkgs/pkgs/response_yh v0.0.0-20250712101515-557e975e5f58
 	github.com/nas-core/nascore/nascore_auth v0.0.0-20250712102845-a2f52b31b3c1
 	github.com/nas-core/nascore/nascore_util v0.0.0-20250712121242-8b9739d09a88
 	go.uber.org/zap v1.27.0
