@@ -33,7 +33,11 @@ func ValidateTokenAndGetUserInfo(r *http.Request, sys_cfg *system_config.SysCfg)
 
 	// 如果 header 中没有有效的 token, 尝试从 URL query parameter "token" 获取
 	if accessToken == "" {
-		accessToken = r.URL.Query().Get("token")
+		accessTokenCookie, err := r.Cookie("cookieName")
+		if err != nil {
+			return nil, err
+		}
+		accessToken = accessTokenCookie.Value
 		if accessToken == "" {
 			return nil, errors.New("missing authorization token in header or query parameter")
 		}
