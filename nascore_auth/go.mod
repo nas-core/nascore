@@ -5,7 +5,7 @@ go 1.24.4
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/nas-core/nascore/nascore_pkgs v0.0.0-20250711115421-c4d1ebb345f3
-	github.com/nas-core/nascore/nascore_util v0.0.0-20250712095420-795b2ff98e50
+	github.com/nas-core/nascore/nascore_util v0.0.0-20250712121242-8b9739d09a88
 	go.uber.org/zap v1.27.0
 )
 
