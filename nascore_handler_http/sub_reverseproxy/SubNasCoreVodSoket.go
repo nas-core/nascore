@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/joyanhui/golang-pkgs/pkgs/response_yh"
 	"github.com/nas-core/nascore/nascore_util/system_config"
 	"go.uber.org/zap"
 )
@@ -17,6 +18,16 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 	return func(w http.ResponseWriter, r *http.Request) {
 		// logger.Info("SubNasCoreVodSocket started url path ", r.URL.Path)
 		if r.URL.Path == "admin_setting.html" {
+			var err error
+			userInfo, err := user_helper.ValidateTokenAndGetUserInfo(r, nsCfg)
+			if err != nil {
+				response_yh.SendError(w, "Authorization failed: "+err.Error(), http.StatusUnauthorized)
+				return
+			}
+			if !userInfo.IsAdmin { // 仅限管理员
+				response_yh.SendError(w, "you are not admin ", http.StatusUnauthorized)
+				return
+			}
 		}
 		target, err := url.Parse("http://unix")
 		if err != nil {
