@@ -15,7 +15,10 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 	// logger.Info("SubNasCoreVodSocket started")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger.Info("SubNasCoreVodSocket started url path", r.URL.Path)
+		// logger.Info("SubNasCoreVodSocket started url path ", r.URL.Path)
+		if r.URL.Path == "admin_setting.html" {
+			//	r.URL.Path = "/"
+		}
 		target, err := url.Parse("http://unix")
 		if err != nil {
 			logger.Errorw("failed to parse target URL", "error", err)

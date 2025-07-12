@@ -13,10 +13,8 @@ import (
 
 func execLegoRenewOrGet(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 	commandStr := nsCfg.ThirdPartyExt.AcmeLego.Command
-	// 替换字符串里面的 ${BinPath} 和 ${LEGO_PATH}
 	commandStr = strings.ReplaceAll(commandStr, "${BinPath}", nsCfg.ThirdPartyExt.AcmeLego.BinPath)
 	commandStr = strings.ReplaceAll(commandStr, "${LEGO_PATH}", nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH)
-
 	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr, logger)
 	logger.Debug(" execLegoCommand err len", len(errArr), " err ", errArr)
 	logger.Debug(" execLegoCommand stdoutArr len ", len(stdoutArr), " stdoutArr", stdoutArr)

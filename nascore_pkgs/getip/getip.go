@@ -6,11 +6,7 @@ import (
 	"strings"
 )
 
-// GetClientIP 从 http.Request 中提取客户端的 IP 地址。
-// 它会优先检查 X-Forwarded-For 和 X-Real-Ip 头部，
-// 如果这些头部不存在，则回退到使用 r.RemoteAddr。
 func GetClientIP(r *http.Request) string {
-	// 尝试从 X-Forwarded-For 头部获取 IP
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 		ips := strings.Split(xff, ",")
 		if len(ips) > 0 {
@@ -18,12 +14,10 @@ func GetClientIP(r *http.Request) string {
 			return strings.TrimSpace(ips[0])
 		}
 	}
-
 	// 尝试从 X-Real-Ip 头部获取 IP
 	if xRealIP := r.Header.Get("X-Real-Ip"); xRealIP != "" {
 		return strings.TrimSpace(xRealIP)
 	}
-
 	// 最后，使用 r.RemoteAddr
 	if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		return strings.TrimSpace(ip)

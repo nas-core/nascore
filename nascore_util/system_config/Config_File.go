@@ -200,7 +200,7 @@ func newDefaultServerConfig() ServerStru {
 		DefaultStaticFileServiceEnable:      true,
 		DefaultStaticFileServiceRoot:        "./static/",
 		DefaultStaticFileServiceDownloadUrl: "https://github.com/nas-core/nascore_static/archive/refs/heads/main.zip",
-		UnixSocketFilePath:                  "/tmp/nascore_socket",
+		UnixSocketFilePath:                  "/tmp/nascore_socket/",
 	}
 }
 
@@ -300,12 +300,17 @@ func NewDefaultConfig() *SysCfg {
 		Users: []map[string]string{{
 			"username": "admin",
 			"passwd":   "admin",
+			"home":     "/tmp", // 末尾不能是/开头
+			"isadmin":  "yes",
+		}, {
+			"username": "nascore",
+			"passwd":   "nascore",
 			"home":     "/tmp",
 			"isadmin":  "yes",
 		}, {
 			"username": "yh",
 			"passwd":   "yh",
-			"home":     "/home/yh/tmp", // 末尾不能是/开头
+			"home":     "/home/yh/tmp",
 			"isadmin":  "no",
 		}},
 	}

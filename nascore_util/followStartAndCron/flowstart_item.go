@@ -56,8 +56,6 @@ func Caddy2FollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (
 
 // RcloneFollowStart executes rclone mount commands from system configuration
 func RcloneFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (err error) {
-	logger.Info("rclone auto mount is enable ...")
-
 	exeRcloneAutoMount(nsCfg, logger)
 
 	return nil

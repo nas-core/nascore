@@ -81,7 +81,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesEnable {
 		if nowTimeInt64-lastExecADGuardsGetRulesTime > int64(nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesInterval*3600) {
-			logger.Info("Executing execADGuardsGetRules as scheduled.")
+			logger.Info("Start ADGuards update Rules as scheduled.")
 			execADGuardsGetRules(nsCfg, logger)
 			atomic.StoreInt64(&lastExecADGuardsGetRulesTime, nowTimeInt64)
 		}
@@ -89,7 +89,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AcmeLego.IsLegoAutoRenew {
 		if nowTimeInt64-lastExecLegoRenewOrGetTime > int64(nsCfg.ThirdPartyExt.AcmeLego.AutoUpdateCheckInterval*3600) {
-			logger.Info("Executing execLegoRenewOrGet as scheduled.")
+			logger.Info("Start lego as scheduled.")
 			execLegoRenewOrGet(nsCfg, logger)
 			atomic.StoreInt64(&lastExecLegoRenewOrGetTime, nowTimeInt64)
 		}
@@ -97,7 +97,6 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	// 热重载配置。仅在未重新加载时尝试。
 	if atomic.CompareAndSwapInt32(&isReloadingNascoreToml, 0, 1) {
-		// logger.Info("Attempting to hot reload nascore.toml.")
 		reloadNascoreToml(nsCfg)
 		atomic.StoreInt32(&isReloadingNascoreToml, 0)
 	}
@@ -114,7 +113,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 	// 在无服务器模式下，它每个请求周期运行一次。
 	for {
 		if nsCfg.ThirdPartyExt.Rclone.AutoMountEnable && atomic.CompareAndSwapInt32(&isRcloneMountFollowStart, 0, 1) {
-			logger.Info("Starting RcloneFollowStart.")
+			logger.Info("Starting Rclone AutoMount FollowStart.")
 			if nsCfg.Server.IsRunInServerLess {
 				RcloneFollowStart(nsCfg, logger)
 			} else {
