@@ -1,4 +1,4 @@
-module github.com/nas-core/nascore/webdav_core
+module github.com/nas-core/nascore/nascore_webdav_core
 
 go 1.24.4
 

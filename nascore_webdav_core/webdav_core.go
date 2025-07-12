@@ -1,4 +1,4 @@
-package webdav_core
+package nascore_webdav_core
 
 import (
 	"net/http"
