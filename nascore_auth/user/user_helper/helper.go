@@ -31,16 +31,20 @@ func ValidateTokenAndGetUserInfo(r *http.Request, sys_cfg *system_config.SysCfg)
 		}
 	}
 
-	// 如果 header 中没有有效的 token, 尝试从 URL query parameter "token" 获取
 	if accessToken == "" {
-		accessTokenCookie, err := r.Cookie("cookieName")
+		accessTokenCookie, err := r.Cookie("nascore_jwt_access_token")
 		if err != nil {
-			return nil, err
+			accessToken = "" // 清空，确保后续会检查URL参数
+		} else {
+			accessToken = accessTokenCookie.Value
 		}
-		accessToken = accessTokenCookie.Value
-		if accessToken == "" {
-			return nil, errors.New("missing authorization token in header or query parameter")
-		}
+	}
+	if accessToken == "" {
+		// 从url获取
+		accessToken = r.URL.Query().Get("token")
+	}
+	if accessToken == "" {
+		return nil, errors.New("token is empty")
 	}
 
 	// 验证token

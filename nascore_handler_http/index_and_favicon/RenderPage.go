@@ -21,8 +21,8 @@ func init() {
 	}
 }
 
-// ErrorPageData 定义了传递给错误页面的数据结构
-type ErrorPageData struct {
+// errorPageData 定义了传递给错误页面的数据结构
+type errorPageData struct {
 	Title              string
 	EnglishDescription string
 	ChineseDescription string
@@ -35,7 +35,7 @@ type ErrorPageData struct {
 func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescription string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	data := ErrorPageData{
+	data := errorPageData{
 		Title:              title,
 		EnglishDescription: englishDescription,
 		ChineseDescription: chineseDescription,
@@ -44,7 +44,7 @@ func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescrip
 	// 执行模板并写入响应
 	err := errorPageTemplate.Execute(w, data)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error by RenderPage", http.StatusInternalServerError)
 		return
 	}
 }

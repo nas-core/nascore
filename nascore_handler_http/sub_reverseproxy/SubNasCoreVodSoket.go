@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/joyanhui/golang-pkgs/pkgs/response_yh"
 	"github.com/nas-core/nascore/nascore_auth/user/user_helper"
+	"github.com/nas-core/nascore/nascore_handler_http/index_and_favicon"
 	"github.com/nas-core/nascore/nascore_util/system_config"
 
 	"go.uber.org/zap"
@@ -23,18 +23,19 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 			var err error
 			userInfo, err := user_helper.ValidateTokenAndGetUserInfo(r, nsCfg)
 			if err != nil {
-				response_yh.SendError(w, "Authorization failed: "+err.Error(), http.StatusUnauthorized)
+				index_and_favicon.RenderPage(w, "token err ", "cant get user from ValidateTokenAndGetUserInfo", "")
 				return
 			}
-			if !userInfo.IsAdmin { // 仅限管理员
-				response_yh.SendError(w, "you are not admin ", http.StatusUnauthorized)
+			if !userInfo.IsAdmin {
+				index_and_favicon.RenderPage(w, "you are not admin ", "pls relogin", "")
 				return
 			}
 		}
 		target, err := url.Parse("http://unix")
 		if err != nil {
 			logger.Errorw("failed to parse target URL", "error", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			index_and_favicon.RenderPage(w, "502 err", "", "")
+
 			return
 		}
 		socketFilePathValue := nsCfg.Server.UnixSocketFilePath
