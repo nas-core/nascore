@@ -7,6 +7,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/nas-core/nascore/nascore_auth/user/user_helper"
@@ -25,8 +26,8 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 			index_and_favicon.RenderPage(w, "Token validation failed ", "Token validation failed ", "无法验证您的身份，请先登陆。", "login.shtml", "Goto Login")
 			return
 		}
-
-		if r.URL.Path == "admin_setting.html" {
+		//if r.URL.Path == "admin_setting.html" { 修改为 包含路径
+		if strings.Contains(r.URL.Path, "admin.html") {
 			if !userInfo.IsAdmin {
 				logger.Warnw("用户不是管理员", "user", userInfo.Username) // [auth]
 				index_and_favicon.RenderPage(w, "Insufficient permissions", "Insufficient permissions", "您不是管理员，无法访问此页面。", "login.shtml", "Goto Login")
