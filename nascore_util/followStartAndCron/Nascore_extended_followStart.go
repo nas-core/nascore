@@ -118,8 +118,14 @@ func executeIfMatching(filePath string, fileName string, cmdParams []string, log
 	}
 }
 
-func CheckAllExtensionStatusOnce() {
-	for extName, socketPath := range system_config.ExtensionSocketMap {
+func CheckAllExtensionStatusOnce(nsCfg *system_config.SysCfg) {
+	for extName, socketFile := range system_config.ExtensionSocketMap {
+		socketPath := nsCfg.Server.UnixSocketFilePath
+		if len(socketPath) > 0 && socketPath[len(socketPath)-1] != '/' && socketPath[len(socketPath)-1] != '\\' {
+			socketPath += "/"
+		}
+		socketPath += socketFile
+
 		client := &http.Client{
 			Transport: &http.Transport{
 				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
