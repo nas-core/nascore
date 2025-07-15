@@ -18,6 +18,8 @@ github.com/nas-core/nascore/nascore_auth v0.0.0-20250712102845-a2f52b31b3c1 h1:+
 github.com/nas-core/nascore/nascore_auth v0.0.0-20250712102845-a2f52b31b3c1/go.mod h1:TEybepwhdiKfZeskT5D49csQugLIPSCydnDVncWPYoM=
 github.com/nas-core/nascore/nascore_util v0.0.0-20250712121242-8b9739d09a88 h1:vrf4TZIm06pRlsuCqK7Lik1sDSIe2j/b+NR4F/aYVmI=
 github.com/nas-core/nascore/nascore_util v0.0.0-20250712121242-8b9739d09a88/go.mod h1:uN7+ykCi3REvjALq9d3FDdJoGfdOXQevW1m1JrIyhhA=
+github.com/nas-core/nascore/nascore_util v0.0.0-20250715103251-52b517225618 h1:KDxWoOo1dZ8pFTq/Ln80Pu4bxxS4rGYOK4QQR2eokPo=
+github.com/nas-core/nascore/nascore_util v0.0.0-20250715103251-52b517225618/go.mod h1:uN7+ykCi3REvjALq9d3FDdJoGfdOXQevW1m1JrIyhhA=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
