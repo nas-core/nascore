@@ -50,7 +50,9 @@ func FollowStartAndCronMain_forStateless_andForMachine(nsCfg *system_config.SysC
 		atomic.StoreInt32(&isLoopOneSecondrun, 0) // 确保 loopCheckFollowStart 每请求运行一次
 		atomic.StoreInt32(&isCheckingCron, 0)     // 确保 cronFunc 每请求运行一次
 	}
-
+	if nsCfg.Server.IsRunInServerLess {
+		CheckAllExtensionStatusOnce()
+	}
 	if atomic.LoadInt32(&isLoopOneSecondrun) == 0 { // 避免循环启动
 		if nsCfg.Server.IsRunInServerLess {
 			loopCheckFollowStart(nsCfg, logger) // 同步执行，无睡眠
@@ -155,7 +157,9 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 				go Nascore_extended_followStart(nsCfg, logger)
 			}
 		}
-
+		if !nsCfg.Server.IsRunInServerLess {
+			CheckAllExtensionStatusOnce()
+		}
 		if nsCfg.Server.IsRunInServerLess {
 			break // 在无服务器模式下，我们不希望睡眠并阻塞请求。			// 它应该运行一次检查并返回。
 		} else {

@@ -38,7 +38,7 @@ func SubNasCoreVodSocket(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger,
 		if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
 			socketFilePathValue += "/"
 		}
-		socketFilePathValue += system_config.NasCoreTvSocketFile
+		socketFilePathValue += system_config.ExtensionSocketMap["nascore_vod"]
 
 		// 检查 Socket 文件是否存在
 		if _, err := os.Stat(socketFilePathValue); os.IsNotExist(err) {

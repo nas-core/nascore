@@ -1,10 +1,14 @@
 package followStartAndCron
 
 import (
+	"context"
+	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/nas-core/nascore/nascore_util/isDevMode"
 	"github.com/nas-core/nascore/nascore_util/system_config"
@@ -66,7 +70,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 				cmdParams := []string{} // 命令参数
 				switch {
 				case strings.Contains(strings.ToLower(fileName), "tv"), strings.Contains(strings.ToLower(fileName), "vod"):
-					cmdParams = []string{"-s", socketFilePathValue + system_config.NasCoreTvSocketFile, "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
+					cmdParams = []string{"-s", socketFilePathValue + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
 					logger.Info("🔹start execute", filePath, cmdParams)
 					executeIfMatching(filePath, fileName, cmdParams, logger)
 				}
@@ -111,5 +115,28 @@ func executeIfMatching(filePath string, fileName string, cmdParams []string, log
 		logger.Infof("🔹 executeIfMatching output: %s", string(output))
 	} else {
 		logger.Warnf("🔸 file not executable: %s", fileName)
+	}
+}
+
+func CheckAllExtensionStatusOnce() {
+	for extName, socketPath := range system_config.ExtensionSocketMap {
+		client := &http.Client{
+			Transport: &http.Transport{
+				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return net.Dial("unix", socketPath)
+				},
+			},
+			Timeout: 2 * time.Second,
+		}
+		req, _ := http.NewRequest("GET", "http://unix/ping", nil)
+		resp, err := client.Do(req)
+		if err == nil && resp.StatusCode == 200 {
+			system_config.ExtensionStatusMap[extName] = true
+		} else {
+			system_config.ExtensionStatusMap[extName] = false
+		}
+		if resp != nil {
+			resp.Body.Close()
+		}
 	}
 }
