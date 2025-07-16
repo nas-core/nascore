@@ -11,10 +11,10 @@ import (
 
 // TokenUserInfo 包含token验证后的用户信息
 type TokenUserInfo struct {
-	Username  string
-	HomeDir   string
-	UserPerms string
-	IsAdmin   bool
+	Username string
+	HomeDir  string
+	IsAdmin  bool
+	UserId   int64
 }
 
 // ValidateTokenAndGetUserInfo 验证token并获取用户信息
@@ -63,5 +63,6 @@ func ValidateTokenAndGetUserInfo(r *http.Request, sys_cfg *system_config.SysCfg)
 		Username: claims.Username,
 		HomeDir:  user.HomeDir,
 		IsAdmin:  user.IsAdmin,
+		UserId:   user.UserId,
 	}, nil
 }
