@@ -222,10 +222,11 @@ func newDefaultJWTConfig() JwtStru {
 
 // WebUIStru CDN配置
 type WebUIStru struct {
-	Header    string `mapstructure:"header"`
-	Footer    string `mapstructure:"footer"`
-	Dropzone  string `mapstructure:"dropzone"`
-	Artplayer string `mapstructure:"artplayer"`
+	Header      string `mapstructure:"header"`
+	Footer      string `mapstructure:"footer"`
+	Dropzone    string `mapstructure:"dropzone"`
+	Artplayer   string `mapstructure:"artplayer"`
+	Tailwindcss string `mapstructure:"tailwindcss"`
 }
 
 func newDefaultRclone() RcloneExtStru {
@@ -262,6 +263,8 @@ func newDefaultWebUIPubLicCdn() WebUIStru {
 <script src="https://cdn.jsdmirror.com/npm/hls.js@1.5.18/dist/hls.min.js"></script>
 <script src="https://cdn.jsdmirror.com/npm/artplayer/dist/artplayer.js"></script><!--cdn.jsdelivr.net-->
 `,
+
+		Tailwindcss: `<script src="https://cdn.jsdmirror.com/npm/@tailwindcss/browser@4"></script>`,
 	}
 }
 
