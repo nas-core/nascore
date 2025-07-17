@@ -7,11 +7,11 @@ import (
 )
 
 type SysCfg struct {
-	Server         ServerStru          `mapstructure:"Server"`
-	JWT            JwtStru             `mapstructure:"JWT"`
-	Secret         SecretStru          `mapstructure:"Secret"`
-	WebUIPubLicCdn WebUIStru           `mapstructure:"WebUIPubLicCdn"`
-	Users          []map[string]string `mapstructure:"users"`
+	Server         ServerStru `mapstructure:"Server"`
+	JWT            JwtStru    `mapstructure:"JWT"`
+	Secret         SecretStru `mapstructure:"Secret"`
+	WebUIPubLicCdn WebUIStru  `mapstructure:"WebUIPubLicCdn"`
+	//	Users          []map[string]string `mapstructure:"users"`
 	//	WebSites       []WebsiteEntry      `mapstructure:"WebSites"`
 	Limit LimitStru `mapstructure:"Limit"`
 
@@ -300,22 +300,22 @@ func NewDefaultConfig() *SysCfg {
 			AcmeLego:             newAcmeLegoConfig(),
 			Caddy2:               newCaddy2Config(),
 		},
-		Users: []map[string]string{{
-			"username": "admin",
-			"passwd":   "admin",
-			"home":     "/tmp", // 末尾不能是/开头
-			"isadmin":  "yes",
-		}, {
-			"username": "nascore",
-			"passwd":   "nascore",
-			"home":     "/tmp",
-			"isadmin":  "yes",
-		}, {
-			"username": "yh",
-			"passwd":   "yh",
-			"home":     "/home/yh/tmp",
-			"isadmin":  "no",
-		}},
+		/*		Users: []map[string]string{{
+					"username": "admin",
+					"passwd":   "admin",
+					"home":     "/tmp", // 末尾不能是/开头
+					"isadmin":  "yes",
+				}, {
+					"username": "nascore",
+					"passwd":   "nascore",
+					"home":     "/tmp",
+					"isadmin":  "yes",
+				}, {
+					"username": "yh",
+					"passwd":   "yh",
+					"home":     "/home/yh/tmp",
+					"isadmin":  "no",
+				}}, */
 	}
 }
 
@@ -346,8 +346,8 @@ func LoadConfig(configPath string) (*SysCfg, error) {
 		config.Secret.AESkey = GenerateStr(3)
 		log.Println("config.Secret.AESkey is empty set :", config.Secret.AESkey)
 	}
-	if len(config.Users) > MaxUserLength {
+	/*	if len(config.Users) > MaxUserLength {
 		config.Users = config.Users[:5] // 裁剪到5个
-	}
+	} */
 	return config, err
 }

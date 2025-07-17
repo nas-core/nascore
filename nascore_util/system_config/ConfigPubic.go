@@ -1,5 +1,10 @@
 package system_config
 
+import (
+	"github.com/joyanhui/golang-pkgs/pkgs/exePath"
+	"github.com/nas-core/nascore/nascore_util/isDevMode"
+)
+
 const (
 	PrefixApi         = "/@api/"         // 固定
 	PrefixDdnsGo      = "/@ddnsgo/"      // 固定
@@ -10,6 +15,7 @@ const (
 )
 
 var ConfigFilePath string
+var DbUserPath = exePath.GetExeDir(isDevMode.IsDevMode()) + "nascore.db" // 固定
 
 // ExtensionStatusMap 用于存储扩展名与其可用状态
 var ExtensionStatusMap = make(map[string]bool)
