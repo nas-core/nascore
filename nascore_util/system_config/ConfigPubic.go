@@ -15,7 +15,7 @@ const (
 )
 
 var ConfigFilePath string
-var DbUserPath = exePath.GetExeDir(isDevMode.IsDevMode()) + "nascore.db" // 固定
+var DbUserPath = exePath.GetExeDir(isDevMode.IsDevMode()) + "/nascore.db" // 固定
 
 // ExtensionStatusMap 用于存储扩展名与其可用状态
 var ExtensionStatusMap = make(map[string]bool)
