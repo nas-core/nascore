@@ -4,6 +4,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/nas-core/nascore/nascore_util/subscription"
+
 	"github.com/nas-core/nascore/nascore_util/system_config"
 
 	"go.uber.org/zap"
@@ -24,7 +26,17 @@ var (
 	isCaddy2FollowStart      int32
 	isOpenlistFollowStart    int32
 	isExtProgramFollowStart  int32
+	// lastRefreshSubscriptionTime int64 // 删除未用变量
+	// isRefreshingSubscription    int32 // 删除未用变量
+
+	// 这些变量用于跟踪在当前进程生命周期中是否已启动随从启动操作。在无服务器环境中，
+	// 每个请求可能会启动一个新进程，因此理想情况下，如果外部程序需要在每个新实例上启动， 则这些变量应在每个请求时重置或重新评估。
+
+	vodLastRefreshSubscriptionTime int64
+	vodIsRefreshingSubscription    int32
 )
+
+// const refreshSubscriptionThrottle = 5 * time.Second // 删除未用常量
 
 // 防止独立部署的情况下，没有请求时自动任务不执行。
 func FollowStartAndCronMainLoop_forMachine(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
@@ -83,7 +95,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesEnable {
 		if nowTimeInt64-lastExecADGuardsGetRulesTime > int64(nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesInterval*3600) {
-			logger.Info("Start ADGuards update Rules as scheduled.")
+			logger.Info("[adg] Start ADGuards update Rules as scheduled.")
 			execADGuardsGetRules(nsCfg, logger)
 			atomic.StoreInt64(&lastExecADGuardsGetRulesTime, nowTimeInt64)
 		}
@@ -91,7 +103,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AcmeLego.IsLegoAutoRenew {
 		if nowTimeInt64-lastExecLegoRenewOrGetTime > int64(nsCfg.ThirdPartyExt.AcmeLego.AutoUpdateCheckInterval*3600) {
-			logger.Info("Start lego as scheduled.")
+			logger.Info("[lego] Start lego as scheduled.")
 			execLegoRenewOrGet(nsCfg, logger)
 			atomic.StoreInt64(&lastExecLegoRenewOrGetTime, nowTimeInt64)
 		}
@@ -102,6 +114,53 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 		reloadNascoreToml(nsCfg)
 		atomic.StoreInt32(&isReloadingNascoreToml, 0)
 	}
+
+	// 定时刷新 VOD 订阅
+	vodSub := nsCfg.NascoreExt.Vod.VodSubscription
+	currentTime := time.Now().Unix()
+	if len(vodSub.Urls) > 0 && (currentTime-atomic.LoadInt64(&vodLastRefreshSubscriptionTime) > int64(vodSub.IntervalHour)*3600 || atomic.LoadInt64(&vodLastRefreshSubscriptionTime) == 0) {
+		if atomic.CompareAndSwapInt32(&vodIsRefreshingSubscription, 0, 1) {
+			go func() {
+				defer atomic.StoreInt32(&vodIsRefreshingSubscription, 0)
+				logger.Info("[vod] Start refreshing subscription...")
+				// 真正调用 FetchAndMergeSubscriptions
+				_, err := subscription.FetchAndMergeSubscriptions(
+					nsCfg.ThirdPartyExt.GitHubDownloadMirror,
+					logger,
+					vodSub.Urls,
+					"nascore_subscription.toml", // 可根据实际情况调整
+				)
+				if err != nil {
+					logger.Errorf("[vod] refresh subscription error: %v", err)
+				} else {
+					logger.Info("[vod] refresh subscription success")
+				}
+				atomic.StoreInt64(&vodLastRefreshSubscriptionTime, currentTime)
+			}()
+		}
+	}
+}
+
+// 手动触发 VOD 订阅刷新
+func RefreshVodSubscriptionNow(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
+	vodSub := nsCfg.NascoreExt.Vod.VodSubscription
+	if len(vodSub.Urls) == 0 {
+		logger.Warn("[vod] No subscription urls configured")
+		return
+	}
+	logger.Info("[vod] Manual trigger: Start refreshing subscription...")
+	_, err := subscription.FetchAndMergeSubscriptions(
+		nsCfg.ThirdPartyExt.GitHubDownloadMirror,
+		logger,
+		vodSub.Urls,
+		"nascore_subscription.toml",
+	)
+	if err != nil {
+		logger.Errorf("[vod] Manual refresh subscription error: %v", err)
+	} else {
+		logger.Info("[vod] Manual refresh subscription success")
+	}
+	atomic.StoreInt64(&vodLastRefreshSubscriptionTime, time.Now().Unix())
 }
 
 func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {

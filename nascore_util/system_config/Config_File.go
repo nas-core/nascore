@@ -18,10 +18,29 @@ type SysCfg struct {
 	NascoreExt    NascoreExtStru    `mapstructure:"NascoreExt"`
 	ThirdPartyExt ThirdPartyExtStru `mapstructure:"ThirdPartyExt"`
 }
+type VodExtStru struct {
+	VodCache struct {
+		DoubanExpire    int `mapstructure:"douban_expire"`
+		DoubanMax       int `mapstructure:"douban_max"`
+		OtherExpire     int `mapstructure:"other_expire"`
+		OtherMax        int `mapstructure:"other_max"`
+		VoddetailExpire int `mapstructure:"voddetail_expire"`
+		VoddetailMax    int `mapstructure:"voddetail_max"`
+		VodlistExpire   int `mapstructure:"vodlist_expire"`
+		VodlistMax      int `mapstructure:"vodlist_max"`
+	} `mapstructure:"vod_cache"`
+	VodSubscription struct {
+		DefaultSelectedAPISite []string `mapstructure:"default_selected_api_site"`
+		IntervalHour           int      `mapstructure:"interval_hour"`
+		Urls                   []string `mapstructure:"urls"`
+	} `mapstructure:"vod_subscription"`
+}
+
 type NascoreExtStru struct {
-	UserID         string `mapstructure:"UserID"`
-	UserKey        string `mapstructure:"UserKey"`
-	UnixSocketPath string `mapstructure:"UnixSocketPath"`
+	UserID         string     `mapstructure:"UserID"`
+	UserKey        string     `mapstructure:"UserKey"`
+	UnixSocketPath string     `mapstructure:"UnixSocketPath"`
+	Vod            VodExtStru `mapstructure:"vod"`
 }
 
 type ThirdPartyExtStru struct {
@@ -278,10 +297,9 @@ type SecretStru struct {
 func NewDefaultConfig() *SysCfg {
 	return &SysCfg{
 		Server: newDefaultServerConfig(),
-		//	WebSites: newWebSiteConfig(),
-		JWT: newDefaultJWTConfig(),
+		JWT:    newDefaultJWTConfig(),
 		Secret: SecretStru{
-			JwtSecret:      GenerateStr(1), // 创建
+			JwtSecret:      GenerateStr(1),
 			Sha256HashSalt: GenerateStr(2),
 			AESkey:         GenerateStr(3),
 		},
@@ -299,6 +317,44 @@ func NewDefaultConfig() *SysCfg {
 			AdGuard:              newAdGuardConfig(),
 			AcmeLego:             newAcmeLegoConfig(),
 			Caddy2:               newCaddy2Config(),
+		},
+		NascoreExt: NascoreExtStru{
+			UserID:         "username",
+			UserKey:        "sdsds",
+			UnixSocketPath: "",
+			Vod: VodExtStru{
+				VodCache: struct {
+					DoubanExpire    int `mapstructure:"douban_expire"`
+					DoubanMax       int `mapstructure:"douban_max"`
+					OtherExpire     int `mapstructure:"other_expire"`
+					OtherMax        int `mapstructure:"other_max"`
+					VoddetailExpire int `mapstructure:"voddetail_expire"`
+					VoddetailMax    int `mapstructure:"voddetail_max"`
+					VodlistExpire   int `mapstructure:"vodlist_expire"`
+					VodlistMax      int `mapstructure:"vodlist_max"`
+				}{
+					DoubanExpire:    150,
+					DoubanMax:       50,
+					OtherExpire:     25,
+					OtherMax:        120,
+					VoddetailExpire: 120,
+					VoddetailMax:    120,
+					VodlistExpire:   150,
+					VodlistMax:      120,
+				},
+				VodSubscription: struct {
+					DefaultSelectedAPISite []string `mapstructure:"default_selected_api_site"`
+					IntervalHour           int      `mapstructure:"interval_hour"`
+					Urls                   []string `mapstructure:"urls"`
+				}{
+					DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
+					IntervalHour:           22,
+					Urls: []string{
+						"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
+						"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
+					},
+				},
+			},
 		},
 		/*		Users: []map[string]string{{
 					"username": "admin",
