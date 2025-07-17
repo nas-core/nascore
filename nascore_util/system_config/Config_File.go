@@ -52,7 +52,7 @@ type VodExtStru struct {
 type NascoreExtStru struct {
 	UserID  string     `mapstructure:"UserID"`
 	UserKey string     `mapstructure:"UserKey"`
-	Vod     VodExtStru `mapstructure:"vod"`
+	Vod     VodExtStru `mapstructure:"Vod"`
 }
 
 type ThirdPartyExtStru struct {
