@@ -18,29 +18,41 @@ type SysCfg struct {
 	NascoreExt    NascoreExtStru    `mapstructure:"NascoreExt"`
 	ThirdPartyExt ThirdPartyExtStru `mapstructure:"ThirdPartyExt"`
 }
+
+// 新增：VodCacheStru 类型
+// 影视缓存相关配置
+// [NascoreExt.vod.VodCache]
+type VodCacheStru struct {
+	DoubanExpire    int `mapstructure:"DoubanExpire"`
+	DoubanMax       int `mapstructure:"DoubanMax"`
+	OtherExpire     int `mapstructure:"OtherExpire"`
+	OtherMax        int `mapstructure:"OtherMax"`
+	VoddetailExpire int `mapstructure:"VoddetailExpire"`
+	VoddetailMax    int `mapstructure:"VoddetailMax"`
+	VodlistExpire   int `mapstructure:"VodlistExpire"`
+	VodlistMax      int `mapstructure:"VodlistMax"`
+}
+
+// 新增：VodSubscriptionStru 类型
+// 影视订阅相关配置
+// [NascoreExt.vod.VodSubscription]
+type VodSubscriptionStru struct {
+	DefaultSelectedAPISite []string `mapstructure:"DefaultSelectedAPISite"`
+	IntervalHour           int      `mapstructure:"IntervalHour"`
+	Urls                   []string `mapstructure:"Urls"`
+}
+
+// 修改 VodExtStru，使用类型字段
+// VodExtStru 影视订阅相关配置
 type VodExtStru struct {
-	VodCache struct {
-		DoubanExpire    int `mapstructure:"douban_expire"`
-		DoubanMax       int `mapstructure:"douban_max"`
-		OtherExpire     int `mapstructure:"other_expire"`
-		OtherMax        int `mapstructure:"other_max"`
-		VoddetailExpire int `mapstructure:"voddetail_expire"`
-		VoddetailMax    int `mapstructure:"voddetail_max"`
-		VodlistExpire   int `mapstructure:"vodlist_expire"`
-		VodlistMax      int `mapstructure:"vodlist_max"`
-	} `mapstructure:"vod_cache"`
-	VodSubscription struct {
-		DefaultSelectedAPISite []string `mapstructure:"default_selected_api_site"`
-		IntervalHour           int      `mapstructure:"interval_hour"`
-		Urls                   []string `mapstructure:"urls"`
-	} `mapstructure:"vod_subscription"`
+	VodCache        VodCacheStru        `mapstructure:"VodCache"`
+	VodSubscription VodSubscriptionStru `mapstructure:"VodSubscription"`
 }
 
 type NascoreExtStru struct {
-	UserID         string     `mapstructure:"UserID"`
-	UserKey        string     `mapstructure:"UserKey"`
-	UnixSocketPath string     `mapstructure:"UnixSocketPath"`
-	Vod            VodExtStru `mapstructure:"vod"`
+	UserID  string     `mapstructure:"UserID"`
+	UserKey string     `mapstructure:"UserKey"`
+	Vod     VodExtStru `mapstructure:"vod"`
 }
 
 type ThirdPartyExtStru struct {
@@ -319,42 +331,9 @@ func NewDefaultConfig() *SysCfg {
 			Caddy2:               newCaddy2Config(),
 		},
 		NascoreExt: NascoreExtStru{
-			UserID:         "username",
-			UserKey:        "sdsds",
-			UnixSocketPath: "",
-			Vod: VodExtStru{
-				VodCache: struct {
-					DoubanExpire    int `mapstructure:"douban_expire"`
-					DoubanMax       int `mapstructure:"douban_max"`
-					OtherExpire     int `mapstructure:"other_expire"`
-					OtherMax        int `mapstructure:"other_max"`
-					VoddetailExpire int `mapstructure:"voddetail_expire"`
-					VoddetailMax    int `mapstructure:"voddetail_max"`
-					VodlistExpire   int `mapstructure:"vodlist_expire"`
-					VodlistMax      int `mapstructure:"vodlist_max"`
-				}{
-					DoubanExpire:    150,
-					DoubanMax:       50,
-					OtherExpire:     25,
-					OtherMax:        120,
-					VoddetailExpire: 120,
-					VoddetailMax:    120,
-					VodlistExpire:   150,
-					VodlistMax:      120,
-				},
-				VodSubscription: struct {
-					DefaultSelectedAPISite []string `mapstructure:"default_selected_api_site"`
-					IntervalHour           int      `mapstructure:"interval_hour"`
-					Urls                   []string `mapstructure:"urls"`
-				}{
-					DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
-					IntervalHour:           22,
-					Urls: []string{
-						"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
-						"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
-					},
-				},
-			},
+			UserID:  "username",
+			UserKey: "sdsds",
+			Vod:     newDefaultVodExtStru(),
 		},
 		/*		Users: []map[string]string{{
 					"username": "admin",
@@ -406,4 +385,28 @@ func LoadConfig(configPath string) (*SysCfg, error) {
 		config.Users = config.Users[:5] // 裁剪到5个
 	} */
 	return config, err
+}
+
+// 新增：VodExtStru 默认值初始化函数
+func newDefaultVodExtStru() VodExtStru {
+	return VodExtStru{
+		VodCache: VodCacheStru{
+			DoubanExpire:    150,
+			DoubanMax:       50,
+			OtherExpire:     25,
+			OtherMax:        120,
+			VoddetailExpire: 120,
+			VoddetailMax:    120,
+			VodlistExpire:   150,
+			VodlistMax:      120,
+		},
+		VodSubscription: VodSubscriptionStru{
+			DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
+			IntervalHour:           22,
+			Urls: []string{
+				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
+				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
+			},
+		},
+	}
 }
