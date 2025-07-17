@@ -264,7 +264,7 @@ func newDefaultWebUIPubLicCdn() WebUIStru {
 <script src="https://cdn.jsdmirror.com/npm/artplayer/dist/artplayer.js"></script><!--cdn.jsdelivr.net-->
 `,
 
-		Tailwindcss: `<script src="https://cdn.jsdmirror.com/npm/@tailwindcss/browser@4"></script>`,
+		Tailwindcss: `<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/tailwindcss.min.js"></script>`,
 	}
 }
 
