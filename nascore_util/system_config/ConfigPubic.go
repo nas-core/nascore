@@ -5,6 +5,7 @@ const (
 	PrefixDdnsGo      = "/@ddnsgo/"      // 固定
 	PrefixAdguardhome = "/@adguardhome/" // 固定
 	PrefixNasCoreTv   = "/@nascore_vod/" // 固定
+	PrefixLinks       = "/@links/"       // 固定
 	MaxUserLength     = 5
 )
 

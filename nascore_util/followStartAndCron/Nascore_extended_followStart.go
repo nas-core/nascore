@@ -18,7 +18,7 @@ import (
 // 定义需要忽略的文件后缀
 var ignoredExtensions = []string{
 	".toml", ".json", ".yaml", ".yml", ".txt", ".md", ".ini",
-	".mod", ".go", ".sum", ".log", ".lock", ".socket",
+	".mod", ".go", ".sum", ".log", ".lock", ".socket", ".db", ".sqlite", ".sqlite3", ".duckdb",
 }
 
 // Nascore_extended_followStart 扩展的启动跟踪函数
