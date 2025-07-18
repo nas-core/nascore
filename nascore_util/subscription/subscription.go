@@ -50,17 +50,17 @@ func ReadSubscriptionConfigFromFile(logger *zap.SugaredLogger, filePath string) 
 	v.SetConfigType("toml")
 
 	if err := v.ReadInConfig(); err != nil {
-		logger.Warnf("load from %s get subscription config failed: %v", filePath, err)
+		logger.Warnf("[subscription] load from %s get subscription config failed: %v", filePath, err)
 		return nil, err
 	}
 
 	err := v.Unmarshal(&conf)
 	if err != nil {
-		logger.Errorf("Unmarshal file %s subscription config failed: %v", filePath, err)
+		logger.Errorf("[subscription] Unmarshal file %s subscription config failed: %v", filePath, err)
 		return nil, err
 	}
 
-	logger.Debugf("Loaded %s successfully, get %d sites.", filePath, len(conf))
+	logger.Debugf("[subscription] Loaded %s successfully, got %d sites.", filePath, len(conf))
 	return conf, nil
 }
 
@@ -77,10 +77,10 @@ func SaveSubscriptionConfigToFile(logger *zap.SugaredLogger, cfg ApiSitesConfig,
 
 	err := vp.WriteConfigAs(filePath)
 	if err != nil {
-		logger.Errorf("将订阅配置写入文件 %s 失败: %v", filePath, err)
+		logger.Errorf("[subscription] Failed to write subscription config to file %s: %v", filePath, err)
 		return err
 	}
-	logger.Infof("订阅配置已成功写入文件: %s", filePath)
+	logger.Debugf("[subscription] Subscription config written to file: %s", filePath)
 	return nil
 }
 
@@ -94,7 +94,7 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 		go func(u string) {
 			defer wg.Done()
 			if u == "" {
-				logger.Errorf("订阅源 URL 为空")
+				logger.Errorf("[subscription] Subscription source URL is empty")
 				return
 			}
 			if len(githubDownloadMirror) > len("https://") {
@@ -105,41 +105,38 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 					u = githubDownloadMirror + u
 				}
 			}
-			logger.Debugf("开始获取订阅源: %s", u)
+			logger.Debugf("[subscription] Start fetching subscription source: %s", u)
 			resp, err := http.Get(u)
 			if err != nil {
-				logger.Errorf("获取订阅源 %s 失败: %v", u, err)
+				logger.Errorf("[subscription] Failed to fetch subscription source %s: %v", u, err)
 				return
 			}
 			defer resp.Body.Close()
 
 			if resp.StatusCode != http.StatusOK {
-				logger.Errorf("获取订阅源 %s 返回非正常状态码: %d", u, resp.StatusCode)
+				logger.Errorf("[subscription] Subscription source %s returned non-OK status: %d", u, resp.StatusCode)
 				return
 			}
 
 			data, err := io.ReadAll(resp.Body)
 			if err != nil {
-				logger.Errorf("读取订阅源 %s 响应体失败: %v", u, err)
+				logger.Errorf("[subscription] Failed to read response body from %s: %v", u, err)
 				return
 			}
 
-			// 使用 viper 解析 TOML
 			v := viper.New()
-			v.SetConfigType("toml") // 明确设置配置类型为 TOML
+			v.SetConfigType("toml")
 
-			// 将字节数据读入 viper
 			err = v.ReadConfig(bytes.NewReader(data))
 			if err != nil {
-				logger.Errorf("解析订阅源 %s TOML 失败: %v", u, err)
+				logger.Errorf("[subscription] Failed to parse TOML from %s: %v", u, err)
 				return
 			}
 
 			var tempConfig ApiSitesConfig
-			// 将 viper 配置反序列化到结构体
 			err = v.Unmarshal(&tempConfig)
 			if err != nil {
-				logger.Errorf("Unmarshal 订阅源 %s 配置失败: %v", u, err)
+				logger.Errorf("[subscription] Failed to unmarshal config from %s: %v", u, err)
 				return
 			}
 
@@ -148,7 +145,7 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 				mergedConfig[k] = v
 			}
 			mu.Unlock()
-			logger.Info("订阅源 %s 获取并合并成功。", u)
+			logger.Debugf("[subscription] Subscription source %s fetched and merged successfully.", u)
 		}(url)
 	}
 	wg.Wait()
@@ -165,15 +162,15 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 		sortedMergedConfig[k] = mergedConfig[k]
 	}
 
-	logger.Info("所有订阅源合并成功，共 %d 个站点。", len(sortedMergedConfig))
+	logger.Debugf("[subscription] All subscription sources merged, total %d sites.", len(sortedMergedConfig))
 
 	// 将合并后的配置写入本地文件
 	if subscriptionFilePath != "" {
 		if err := SaveSubscriptionConfigToFile(logger, sortedMergedConfig, subscriptionFilePath); err != nil {
-			logger.Errorf("保存合并后的订阅配置到文件 %s 失败: %v", subscriptionFilePath, err)
+			logger.Errorf("[subscription] Failed to save merged subscription config to file %s: %v", subscriptionFilePath, err)
 		}
 	} else {
-		logger.Errorf("未指定订阅配置文件路径")
+		logger.Errorf("[subscription] Subscription config file path not specified")
 	}
 
 	return sortedMergedConfig, nil
