@@ -11,6 +11,7 @@ const (
 	PrefixAdguardhome = "/@adguardhome/" // 固定
 	PrefixNasCoreTv   = "/@nascore_vod/" // 固定
 	PrefixLinks       = "/@links/"       // 固定
+	PrefixPublicFun   = "/@public/"      // 固定
 	MaxUserLength     = 5
 )
 
