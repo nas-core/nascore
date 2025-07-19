@@ -45,6 +45,7 @@ type VodSubscriptionStru struct {
 // 修改 VodExtStru，使用类型字段
 // VodExtStru 影视订阅相关配置
 type VodExtStru struct {
+	IsNeedLoginUse  bool                `mapstructure:"IsNeedLoginUse"`
 	VodCache        VodCacheStru        `mapstructure:"VodCache"`
 	VodSubscription VodSubscriptionStru `mapstructure:"VodSubscription"`
 }
@@ -390,6 +391,7 @@ func LoadConfig(configPath string) (*SysCfg, error) {
 // 新增：VodExtStru 默认值初始化函数
 func newDefaultVodExtStru() VodExtStru {
 	return VodExtStru{
+		IsNeedLoginUse: true,
 		VodCache: VodCacheStru{
 			DoubanExpire:    150,
 			DoubanMax:       50,

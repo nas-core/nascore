@@ -63,9 +63,20 @@ func Export(cfg *system_config.SysCfg, exportConfigPath *string) error {
 		content = []byte(strings.Replace(string(content), "[Secret]", "# Some keys used for encryption will be automatically generated if they are empty, but this may cause the login status or password to become invalid after a restart\n[Secret]", 1))
 	}
 
-	if strings.Contains(string(content), "[[Users]]") {
-		content = []byte(strings.Replace(string(content), "[[Users]]", "# Permissions Is Json string\n# RUCc R(ReadFile) U(UpdateFile) C(CreateFile) c(CreateDir) D(DeleteFile)\n[[Users]]", 1))
-	}
+	// 通用处理所有多行字符串字段，去除首尾空行
+	reMultiLine := regexp.MustCompile(`(?m)^([a-zA-Z0-9_]+)\s*=\s*'''([\s\S]*?)'''`)
+	content = reMultiLine.ReplaceAllFunc(content, func(match []byte) []byte {
+		str := string(match)
+		parts := reMultiLine.FindStringSubmatch(str)
+		if len(parts) != 3 {
+			return match
+		}
+		key := parts[1]
+		value := parts[2]
+		// 去除首尾空行
+		value = strings.Trim(value, "\n\r ")
+		return []byte(key + " = '''\n" + value + "\n'''")
+	})
 
 	// 重新写入文件
 	err = os.WriteFile(*exportConfigPath, content, 0644)
