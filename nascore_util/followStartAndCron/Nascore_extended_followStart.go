@@ -92,10 +92,9 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 				continue
 			}
 
-			cmdParams := []string{}
 			switch {
 			case strings.Contains(strings.ToLower(fileName), "tv"), strings.Contains(strings.ToLower(fileName), "vod"):
-				cmdParams = []string{"-s", socketFilePathValue + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
+				cmdParams := []string{"-s", socketFilePathValue + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
 				logger.Debug("[nascore] 🔹Starting execution: %s, parameters: %v", filePath, cmdParams)
 				executeIfMatching(filePath, fileName, cmdParams, logger)
 			default:
