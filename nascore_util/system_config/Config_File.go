@@ -10,7 +10,7 @@ type SysCfg struct {
 	Server         ServerStru `mapstructure:"Server"`
 	JWT            JwtStru    `mapstructure:"JWT"`
 	Secret         SecretStru `mapstructure:"Secret"`
-	WebUIPubLicCdn WebUIStru  `mapstructure:"WebUIPubLicCdn"`
+	WebUICdnPrefix string     `mapstructure:"WebUICdnPrefix"`
 	//	Users          []map[string]string `mapstructure:"users"`
 	//	WebSites       []WebsiteEntry      `mapstructure:"WebSites"`
 	Limit LimitStru `mapstructure:"Limit"`
@@ -252,106 +252,28 @@ func newDefaultJWTConfig() JwtStru {
 	}
 }
 
-// WebUIStru CDN配置
-type WebUIStru struct {
-	Header      string `mapstructure:"header"`
-	Footer      string `mapstructure:"footer"`
-	Dropzone    string `mapstructure:"dropzone"`
-	Artplayer   string `mapstructure:"artplayer"`
-	Tailwindcss string `mapstructure:"tailwindcss"`
-}
-
-func newDefaultRclone() RcloneExtStru {
-	return RcloneExtStru{
-		DownLoadlink:    "https://github.com/rclone/rclone/releases/download/v{ver}/rclone-v{ver}-{os}-{arch}.zip",
-		Version:         "1.70.1",
-		BinPath:         "./rclone",
-		AutoMountEnable: false,
-		AutoMountCommand: `
-${BinPath} mount oss_qd: /home/yh/tmp/oss_qd --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
-${BinPath}  mount jianguoyun: /home/yh/tmp/jianguoyun --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
-`,
-		AutoUnMountCommand: `
-fusermount3 -u /home/yh/tmp &nascore
-fusermount3 -u /home/yh/jianguoyun &nascore
-fusermount3 -u /home/yh/oss_qd &nascore
-`,
-	}
-}
-
-// newDefaultWebUIPubLicCdn 返回默认CDN配置
-func newDefaultWebUIPubLicCdn() WebUIStru {
-	return WebUIStru{
-		Header: `
-<link href="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap@5.1.2/dist/css/bootstrap.min.css" type="text/css"    rel="stylesheet" />
-<link href="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"    type="text/css" rel="stylesheet" />
-<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/axios@0.26.0/dist/axios.min.js" type="application/javascript"></script>
-`,
-		Footer: `
-<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"  type="application/javascript"></script>
-`,
-		Dropzone: `<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/dropzone%405.9.3/dist/min/dropzone.min.js"></script>`,
-		Artplayer: `
-<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/hls.min.js"></script>
-<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/artplayer.min.js"></script>
-`,
-
-		Tailwindcss: `<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/tailwindcss.min.js"></script>`,
-	}
-}
-
-type SecretStru struct {
-	JwtSecret      string `mapstructure:"JwtSecret"`
-	Sha256HashSalt string `mapstructure:"Sha256HashSalt"`
-	AESkey         string `mapstructure:"AESkey"`
-}
-
-// NewDefaultConfig 返回默认配置
-func NewDefaultConfig() *SysCfg {
-	return &SysCfg{
-		Server: newDefaultServerConfig(),
-		JWT:    newDefaultJWTConfig(),
-		Secret: SecretStru{
-			JwtSecret:      GenerateStr(1),
-			Sha256HashSalt: GenerateStr(2),
-			AESkey:         GenerateStr(3),
+// 新增：VodExtStru 默认值初始化函数
+func newDefaultVodExtStru() VodExtStru {
+	return VodExtStru{
+		IsNeedLoginUse: true,
+		VodCache: VodCacheStru{
+			DoubanExpire:    150,
+			DoubanMax:       50,
+			OtherExpire:     25,
+			OtherMax:        120,
+			VoddetailExpire: 120,
+			VoddetailMax:    120,
+			VodlistExpire:   150,
+			VodlistMax:      120,
 		},
-		Limit: LimitStru{
-			MaxFailedLoginsIpMap:       1000,
-			MaxFailedLoginSleepTimeSec: 10,
-			OnlineEditMaxSizeKB:        10240,
+		VodSubscription: VodSubscriptionStru{
+			DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
+			IntervalHour:           22,
+			Urls: []string{
+				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
+				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
+			},
 		},
-		WebUIPubLicCdn: newDefaultWebUIPubLicCdn(),
-		ThirdPartyExt: ThirdPartyExtStru{
-			GitHubDownloadMirror: "https://github.akams.cn/",
-			Openlist:             newOpenlistStru(),
-			DdnsGO:               newDefaultDDSN(),
-			Rclone:               newDefaultRclone(),
-			AdGuard:              newAdGuardConfig(),
-			AcmeLego:             newAcmeLegoConfig(),
-			Caddy2:               newCaddy2Config(),
-		},
-		NascoreExt: NascoreExtStru{
-			UserID:  "username",
-			UserKey: "sdsds",
-			Vod:     newDefaultVodExtStru(),
-		},
-		/*		Users: []map[string]string{{
-					"username": "admin",
-					"passwd":   "admin",
-					"home":     "/tmp", // 末尾不能是/开头
-					"isadmin":  "yes",
-				}, {
-					"username": "nascore",
-					"passwd":   "nascore",
-					"home":     "/tmp",
-					"isadmin":  "yes",
-				}, {
-					"username": "yh",
-					"passwd":   "yh",
-					"home":     "/home/yh/tmp",
-					"isadmin":  "no",
-				}}, */
 	}
 }
 
@@ -388,27 +310,62 @@ func LoadConfig(configPath string) (*SysCfg, error) {
 	return config, err
 }
 
-// 新增：VodExtStru 默认值初始化函数
-func newDefaultVodExtStru() VodExtStru {
-	return VodExtStru{
-		IsNeedLoginUse: true,
-		VodCache: VodCacheStru{
-			DoubanExpire:    150,
-			DoubanMax:       50,
-			OtherExpire:     25,
-			OtherMax:        120,
-			VoddetailExpire: 120,
-			VoddetailMax:    120,
-			VodlistExpire:   150,
-			VodlistMax:      120,
+// NewDefaultConfig 返回默认配置
+func NewDefaultConfig() *SysCfg {
+	return &SysCfg{
+		Server: newDefaultServerConfig(),
+		JWT:    newDefaultJWTConfig(),
+		Secret: SecretStru{
+			JwtSecret:      GenerateStr(1),
+			Sha256HashSalt: GenerateStr(2),
+			AESkey:         GenerateStr(3),
 		},
-		VodSubscription: VodSubscriptionStru{
-			DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
-			IntervalHour:           22,
-			Urls: []string{
-				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
-				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
-			},
+		Limit: LimitStru{
+			MaxFailedLoginsIpMap:       1000,
+			MaxFailedLoginSleepTimeSec: 10,
+			OnlineEditMaxSizeKB:        10240,
 		},
+		WebUICdnPrefix: "https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/",
+		ThirdPartyExt: ThirdPartyExtStru{
+			GitHubDownloadMirror: "https://github.akams.cn/",
+			Openlist:             newOpenlistStru(),
+			DdnsGO:               newDefaultDDSN(),
+			Rclone:               newDefaultRclone(),
+			AdGuard:              newAdGuardConfig(),
+			AcmeLego:             newAcmeLegoConfig(),
+			Caddy2:               newCaddy2Config(),
+		},
+		NascoreExt: NascoreExtStru{
+			UserID:  "username",
+			UserKey: "sdsds",
+			Vod:     newDefaultVodExtStru(),
+		},
+	}
+}
+
+// 恢复 SecretStru 结构体
+// SecretStru 密钥配置
+type SecretStru struct {
+	JwtSecret      string `mapstructure:"JwtSecret"`
+	Sha256HashSalt string `mapstructure:"Sha256HashSalt"`
+	AESkey         string `mapstructure:"AESkey"`
+}
+
+// 恢复 newDefaultRclone 函数
+func newDefaultRclone() RcloneExtStru {
+	return RcloneExtStru{
+		DownLoadlink:    "https://github.com/rclone/rclone/releases/download/v{ver}/rclone-v{ver}-{os}-{arch}.zip",
+		Version:         "1.70.1",
+		BinPath:         "./rclone",
+		AutoMountEnable: false,
+		AutoMountCommand: `
+${BinPath} mount oss_qd: /home/yh/tmp/oss_qd --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
+${BinPath}  mount jianguoyun: /home/yh/tmp/jianguoyun --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
+`,
+		AutoUnMountCommand: `
+fusermount3 -u /home/yh/tmp &nascore
+fusermount3 -u /home/yh/jianguoyun &nascore
+fusermount3 -u /home/yh/oss_qd &nascore
+`,
 	}
 }
