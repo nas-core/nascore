@@ -83,12 +83,12 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 					}
 				}
 			default:
-				logger.Debugf("[nascore] Skipping file %s, unsupported operating system: %s", fileName, runtime.GOOS)
+				logger.Debug("[nascore] Skipping file %s, unsupported operating system: %s", fileName, runtime.GOOS)
 				continue
 			}
 
 			if !isExecutableCandidate {
-				logger.Debugf("[nascore] Skipping file %s, does not meet executable file rules for the OS", fileName)
+				logger.Debug("[nascore] Skipping file %s, does not meet executable file rules for the OS", fileName)
 				continue
 			}
 
@@ -96,10 +96,10 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 			switch {
 			case strings.Contains(strings.ToLower(fileName), "tv"), strings.Contains(strings.ToLower(fileName), "vod"):
 				cmdParams = []string{"-s", socketFilePathValue + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
-				logger.Infof("[nascore] 🔹Starting execution: %s, parameters: %v", filePath, cmdParams)
+				logger.Debug("[nascore] 🔹Starting execution: %s, parameters: %v", filePath, cmdParams)
 				executeIfMatching(filePath, fileName, cmdParams, logger)
 			default:
-				logger.Debugf("[nascore] Skipping file %s, does not match keyword (tv/vod)", fileName)
+				logger.Debug("[nascore] Skipping file %s, does not match keyword (tv/vod)", fileName)
 			}
 		}
 	}
@@ -131,7 +131,7 @@ func executeIfMatching(filePath string, fileName string, cmdParams []string, log
 		logger.Errorf("[nascore] 🔸 Execution failed: %s, error: %v", filePath, err)
 		return
 	}
-	logger.Infof("[nascore] 🔹 Execution output: %s", string(output))
+	logger.Debug("[nascore] 🔹 Execution output: %s", string(output))
 }
 
 func CheckAllExtensionStatusOnce(nsCfg *system_config.SysCfg) {

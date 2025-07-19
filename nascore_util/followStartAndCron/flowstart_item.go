@@ -18,7 +18,7 @@ func DdnsSGOFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) 
 		logger.Errorf("DdnsSGOFollowStart failed: %v", err)
 		return err
 	}
-	logger.Infof("DdnsSGOFollowStart output: %s", string(output))
+	logger.Debug("DdnsSGOFollowStart output: %s", string(output))
 
 	return nil
 }
@@ -34,7 +34,7 @@ func OpenlistFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger)
 		logger.Errorf("OpenlistFollowStart failed: %v", err)
 		return err
 	}
-	logger.Infof("OpenlistFollowStart output: %s", string(output))
+	logger.Debug("OpenlistFollowStart output: %s", string(output))
 
 	return nil
 }
@@ -49,7 +49,7 @@ func Caddy2FollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (
 		logger.Errorf("Caddy2FollowStart failed: %v", err)
 		return err
 	}
-	logger.Infof("Caddy2FollowStart output: %s", string(output))
+	logger.Debug("Caddy2FollowStart output: %s", string(output))
 
 	return nil
 }

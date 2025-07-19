@@ -60,7 +60,7 @@ func ReadSubscriptionConfigFromFile(logger *zap.SugaredLogger, filePath string) 
 		return nil, err
 	}
 
-	logger.Debugf("[subscription] Loaded %s successfully, got %d sites.", filePath, len(conf))
+	logger.Debug("[subscription] Loaded %s successfully, got %d sites.", filePath, len(conf))
 	return conf, nil
 }
 
@@ -80,7 +80,7 @@ func SaveSubscriptionConfigToFile(logger *zap.SugaredLogger, cfg ApiSitesConfig,
 		logger.Errorf("[subscription] Failed to write subscription config to file %s: %v", filePath, err)
 		return err
 	}
-	logger.Debugf("[subscription] Subscription config written to file: %s", filePath)
+	logger.Debug("[subscription] Subscription config written to file: %s", filePath)
 	return nil
 }
 
@@ -105,7 +105,7 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 					u = githubDownloadMirror + u
 				}
 			}
-			logger.Debugf("[subscription] Start fetching subscription source: %s", u)
+			logger.Debug("[subscription] Start fetching subscription source: %s", u)
 			resp, err := http.Get(u)
 			if err != nil {
 				logger.Errorf("[subscription] Failed to fetch subscription source %s: %v", u, err)
@@ -145,7 +145,7 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 				mergedConfig[k] = v
 			}
 			mu.Unlock()
-			logger.Debugf("[subscription] Subscription source %s fetched and merged successfully.", u)
+			logger.Debug("[subscription] Subscription source %s fetched and merged successfully.", u)
 		}(url)
 	}
 	wg.Wait()
@@ -162,7 +162,7 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 		sortedMergedConfig[k] = mergedConfig[k]
 	}
 
-	logger.Debugf("[subscription] All subscription sources merged, total %d sites.", len(sortedMergedConfig))
+	logger.Debug("[subscription] All subscription sources merged, total %d sites.", len(sortedMergedConfig))
 
 	// 将合并后的配置写入本地文件
 	if subscriptionFilePath != "" {

@@ -18,8 +18,8 @@ func Default_staticfileserver_handler(nsCfg *system_config.SysCfg, logger *zap.S
 
 		/*
 			 * // 之前的 代码 		fs := http.StripPrefix(sys_cfg.Server.DefaultStaticFileServiceRoot, http.FileServer(http.Dir(sys_cfg.Server.DefaultStaticFileServiceRoot)))
-				logger.Info("Default_staticfileserver_handler  sys_cfg.Server.DefaultStaticFileServicePrefix:", sys_cfg.Server.DefaultStaticFileServicePrefix)
-				logger.Info("Default_staticfileserver_handler  sys_cfg.Server.DefaultStaticFileServiceRoot:", sys_cfg.Server.DefaultStaticFileServiceRoot)
+				logger.Debug("Default_staticfileserver_handler  sys_cfg.Server.DefaultStaticFileServicePrefix:", sys_cfg.Server.DefaultStaticFileServicePrefix)
+				logger.Debug("Default_staticfileserver_handler  sys_cfg.Server.DefaultStaticFileServiceRoot:", sys_cfg.Server.DefaultStaticFileServiceRoot)
 		*/
 		fs := http.StripPrefix(nsCfg.Server.DefaultStaticFileServicePrefix, http.FileServer(http.Dir(nsCfg.Server.DefaultStaticFileServiceRoot)))
 

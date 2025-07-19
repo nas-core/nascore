@@ -137,6 +137,6 @@ func extractWithSystemCommand(sourcePath, targetPath, extension string, logger *
 		return fmt.Errorf("failed to extract %s file: %w, output: %s", extension, err, string(output))
 	}
 
-	logger.Info("System command extraction successful", zap.String("format", extension))
+	logger.Debug("System command extraction successful", zap.String("format", extension))
 	return nil
 }

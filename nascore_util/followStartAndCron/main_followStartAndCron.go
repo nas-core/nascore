@@ -95,7 +95,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesEnable {
 		if nowTimeInt64-lastExecADGuardsGetRulesTime > int64(nsCfg.ThirdPartyExt.AdGuard.AutoUpdateRulesInterval*3600) {
-			logger.Info("[adg] Start ADGuards update Rules as scheduled.")
+			logger.Debug("[adg] Start ADGuards update Rules as scheduled.")
 			execADGuardsGetRules(nsCfg, logger)
 			atomic.StoreInt64(&lastExecADGuardsGetRulesTime, nowTimeInt64)
 		}
@@ -103,7 +103,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 
 	if nsCfg.ThirdPartyExt.AcmeLego.IsLegoAutoRenew {
 		if nowTimeInt64-lastExecLegoRenewOrGetTime > int64(nsCfg.ThirdPartyExt.AcmeLego.AutoUpdateCheckInterval*3600) {
-			logger.Info("[lego] Start lego as scheduled.")
+			logger.Debug("[lego] Start lego as scheduled.")
 			execLegoRenewOrGet(nsCfg, logger)
 			atomic.StoreInt64(&lastExecLegoRenewOrGetTime, nowTimeInt64)
 		}
@@ -122,7 +122,6 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 		if atomic.CompareAndSwapInt32(&vodIsRefreshingSubscription, 0, 1) {
 			go func() {
 				defer atomic.StoreInt32(&vodIsRefreshingSubscription, 0)
-				logger.Info("[vod] Start refreshing subscription...")
 				// 真正调用 FetchAndMergeSubscriptions
 				_, err := subscription.FetchAndMergeSubscriptions(
 					nsCfg.ThirdPartyExt.GitHubDownloadMirror,
@@ -133,7 +132,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 				if err != nil {
 					logger.Errorf("[vod] refresh subscription error: %v", err)
 				} else {
-					logger.Info("[vod] refresh subscription success")
+					logger.Debug("[vod] refresh subscription success")
 				}
 				atomic.StoreInt64(&vodLastRefreshSubscriptionTime, currentTime)
 			}()
@@ -148,7 +147,7 @@ func RefreshVodSubscriptionNow(nsCfg *system_config.SysCfg, logger *zap.SugaredL
 		logger.Warn("[vod] No subscription urls configured")
 		return
 	}
-	logger.Info("[vod] Manual trigger: Start refreshing subscription...")
+	logger.Debug("[vod] Manual trigger: Start refreshing subscription...")
 	_, err := subscription.FetchAndMergeSubscriptions(
 		nsCfg.ThirdPartyExt.GitHubDownloadMirror,
 		logger,
@@ -158,7 +157,7 @@ func RefreshVodSubscriptionNow(nsCfg *system_config.SysCfg, logger *zap.SugaredL
 	if err != nil {
 		logger.Errorf("[vod] Manual refresh subscription error: %v", err)
 	} else {
-		logger.Info("[vod] Manual refresh subscription success")
+		logger.Debug("[vod] Manual refresh subscription success")
 	}
 	atomic.StoreInt64(&vodLastRefreshSubscriptionTime, time.Now().Unix())
 }
@@ -174,7 +173,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 	// 在无服务器模式下，它每个请求周期运行一次。
 	for {
 		if nsCfg.ThirdPartyExt.Rclone.AutoMountEnable && atomic.CompareAndSwapInt32(&isRcloneMountFollowStart, 0, 1) {
-			logger.Info("Starting Rclone AutoMount FollowStart.")
+			logger.Debug("Starting Rclone AutoMount FollowStart.")
 			if nsCfg.Server.IsRunInServerLess {
 				RcloneFollowStart(nsCfg, logger)
 			} else {
@@ -182,7 +181,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 			}
 		}
 		if nsCfg.ThirdPartyExt.DdnsGO.AutoStartEnable && atomic.CompareAndSwapInt32(&isDdnsSGOFollowStart, 0, 1) {
-			logger.Info("Starting DdnsSGOFollowStart.")
+			logger.Debug("Starting DdnsSGOFollowStart.")
 			if nsCfg.Server.IsRunInServerLess {
 				DdnsSGOFollowStart(nsCfg, logger)
 			} else {
@@ -191,7 +190,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 		}
 		// caddy2
 		if nsCfg.ThirdPartyExt.Caddy2.AutoStartEnable && atomic.CompareAndSwapInt32(&isCaddy2FollowStart, 0, 1) {
-			logger.Info("Starting Caddy2FollowStart.")
+			logger.Debug("Starting Caddy2FollowStart.")
 			if nsCfg.Server.IsRunInServerLess {
 				Caddy2FollowStart(nsCfg, logger)
 			} else {
@@ -200,7 +199,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 		}
 		// openlost
 		if nsCfg.ThirdPartyExt.Openlist.AutoStartEnable && atomic.CompareAndSwapInt32(&isOpenlistFollowStart, 0, 1) {
-			logger.Info("Starting OpenlistFollowStart.")
+			logger.Debug("Starting OpenlistFollowStart.")
 			if nsCfg.Server.IsRunInServerLess {
 				OpenlistFollowStart(nsCfg, logger)
 			} else {
@@ -209,7 +208,7 @@ func loopCheckFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger
 		}
 		// 扩展程序
 		if atomic.CompareAndSwapInt32(&isExtProgramFollowStart, 0, 1) {
-			logger.Info("Starting nascore_vod")
+			logger.Debug("Starting nascore_vod")
 			if nsCfg.Server.IsRunInServerLess {
 				Nascore_extended_followStart(nsCfg, logger)
 			} else {
