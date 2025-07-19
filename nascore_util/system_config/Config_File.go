@@ -283,17 +283,17 @@ fusermount3 -u /home/yh/oss_qd &nascore
 func newDefaultWebUIPubLicCdn() WebUIStru {
 	return WebUIStru{
 		Header: `
-<link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap/5.1.2/css/bootstrap.min.css" type="text/css"    rel="stylesheet" />
-<link href="https://cdn.jsdmirror.com/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css"    type="text/css" rel="stylesheet" />
-<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js" type="application/javascript"></script>
+<link href="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap@5.1.2/dist/css/bootstrap.min.css" type="text/css"    rel="stylesheet" />
+<link href="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"    type="text/css" rel="stylesheet" />
+<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/axios@0.26.0/dist/axios.min.js" type="application/javascript"></script>
 `,
 		Footer: `
-<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap/5.1.2/js/bootstrap.bundle.min.js"  type="application/javascript"></script>
+<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"  type="application/javascript"></script>
 `,
-		Dropzone: `<script src="https://cdn.jsdmirror.com/npm/dropzone@5.9.3/dist/min/dropzone.min.js"></script><!--cdn.jsdelivr.net-->`,
+		Dropzone: `<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/dropzone%405.9.3/dist/min/dropzone.min.js"></script>`,
 		Artplayer: `
-<script src="https://cdn.jsdmirror.com/npm/hls.js@1.5.18/dist/hls.min.js"></script>
-<script src="https://cdn.jsdmirror.com/npm/artplayer/dist/artplayer.js"></script><!--cdn.jsdelivr.net-->
+<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/hls.min.js"></script>
+<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/artplayer.min.js"></script>
 `,
 
 		Tailwindcss: `<script src="https://cdn.jsdmirror.com/gh/nas-core/nascore_static@main/libs/tailwindcss.min.js"></script>`,
