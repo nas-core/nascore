@@ -1,6 +1,7 @@
 package followStartAndCron
 
 import (
+	"database/sql"
 	"sync/atomic"
 	"time"
 
@@ -35,6 +36,11 @@ var (
 	vodLastRefreshSubscriptionTime int64
 	vodIsRefreshingSubscription    int32
 )
+
+var SaveVodSubscriptionFunc func(string) error
+
+// 新增全局变量
+var VodSqliteDB *sql.DB
 
 // const refreshSubscriptionThrottle = 5 * time.Second // 删除未用常量
 
@@ -122,13 +128,7 @@ func cronFunc(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
 		if atomic.CompareAndSwapInt32(&vodIsRefreshingSubscription, 0, 1) {
 			go func() {
 				defer atomic.StoreInt32(&vodIsRefreshingSubscription, 0)
-				// 真正调用 FetchAndMergeSubscriptions
-				_, err := subscription.FetchAndMergeSubscriptions(
-					nsCfg.ThirdPartyExt.GitHubDownloadMirror,
-					logger,
-					vodSub.Urls,
-					"nascore_subscription.toml", // 可根据实际情况调整
-				)
+				err := subscription.RefreshSubscriptionAndSaveToDB(VodSqliteDB, vodSub.Urls, nsCfg.ThirdPartyExt.GitHubDownloadMirror, logger)
 				if err != nil {
 					logger.Errorf("[vod] refresh subscription error: %v", err)
 				} else {
@@ -148,12 +148,7 @@ func RefreshVodSubscriptionNow(nsCfg *system_config.SysCfg, logger *zap.SugaredL
 		return
 	}
 	logger.Debug("[vod] Manual trigger: Start refreshing subscription...")
-	_, err := subscription.FetchAndMergeSubscriptions(
-		nsCfg.ThirdPartyExt.GitHubDownloadMirror,
-		logger,
-		vodSub.Urls,
-		"nascore_subscription.toml",
-	)
+	err := subscription.RefreshSubscriptionAndSaveToDB(VodSqliteDB, vodSub.Urls, nsCfg.ThirdPartyExt.GitHubDownloadMirror, logger)
 	if err != nil {
 		logger.Errorf("[vod] Manual refresh subscription error: %v", err)
 	} else {

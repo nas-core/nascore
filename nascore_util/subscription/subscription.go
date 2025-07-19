@@ -2,6 +2,7 @@ package subscription
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,9 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
+
+	"github.com/pelletier/go-toml/v2"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -42,50 +46,8 @@ func init() {
 	})
 }
 
-// ReadSubscriptionConfigFromFile 从本地 TOML 文件读取订阅配置。
-func ReadSubscriptionConfigFromFile(logger *zap.SugaredLogger, filePath string) (ApiSitesConfig, error) {
-	conf := make(ApiSitesConfig)
-	v := viper.New()
-	v.SetConfigFile(filePath)
-	v.SetConfigType("toml")
-
-	if err := v.ReadInConfig(); err != nil {
-		logger.Warnf("[subscription] load from %s get subscription config failed: %v", filePath, err)
-		return nil, err
-	}
-
-	err := v.Unmarshal(&conf)
-	if err != nil {
-		logger.Errorf("[subscription] Unmarshal file %s subscription config failed: %v", filePath, err)
-		return nil, err
-	}
-
-	logger.Debug("[subscription] Loaded %s successfully, got %d sites.", filePath, len(conf))
-	return conf, nil
-}
-
-// SaveSubscriptionConfigToFile 将 ApiSitesConfig 写入到指定的 TOML 文件。
-
-func SaveSubscriptionConfigToFile(logger *zap.SugaredLogger, cfg ApiSitesConfig, filePath string) error {
-	vp := viper.New() // 使用 vp 变量名避免与循环变量 v 混淆
-	vp.SetConfigType("toml")
-
-	// 遍历配置，将每个站点配置设置到 viper 实例中
-	for k, siteConfig := range cfg {
-		vp.Set(k, siteConfig)
-	}
-
-	err := vp.WriteConfigAs(filePath)
-	if err != nil {
-		logger.Errorf("[subscription] Failed to write subscription config to file %s: %v", filePath, err)
-		return err
-	}
-	logger.Debug("[subscription] Subscription config written to file: %s", filePath)
-	return nil
-}
-
 // FetchAndMergeSubscriptions 从给定的 URL 列表获取 TOML 配置并合并。
-func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.SugaredLogger, urls []string, subscriptionFilePath string) (ApiSitesConfig, error) {
+func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.SugaredLogger, urls []string) (ApiSitesConfig, error) {
 	mergedConfig := make(ApiSitesConfig)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
@@ -164,16 +126,24 @@ func FetchAndMergeSubscriptions(githubDownloadMirror string, logger *zap.Sugared
 
 	logger.Debug("[subscription] All subscription sources merged, total %d sites.", len(sortedMergedConfig))
 
-	// 将合并后的配置写入本地文件
-	if subscriptionFilePath != "" {
-		if err := SaveSubscriptionConfigToFile(logger, sortedMergedConfig, subscriptionFilePath); err != nil {
-			logger.Errorf("[subscription] Failed to save merged subscription config to file %s: %v", subscriptionFilePath, err)
-		}
-	} else {
-		logger.Errorf("[subscription] Subscription config file path not specified")
-	}
-
 	return sortedMergedConfig, nil
+}
+
+// ReadSubscriptionConfigFromString 从TOML字符串读取订阅配置。
+func ReadSubscriptionConfigFromString(logger *zap.SugaredLogger, tomlStr string) (ApiSitesConfig, error) {
+	conf := make(ApiSitesConfig)
+	v := viper.New()
+	v.SetConfigType("toml")
+	if err := v.ReadConfig(bytes.NewBufferString(tomlStr)); err != nil {
+		logger.Warnf("[subscription] load from string get subscription config failed: %v", err)
+		return nil, err
+	}
+	if err := v.Unmarshal(&conf); err != nil {
+		logger.Errorf("[subscription] Unmarshal string subscription config failed: %v", err)
+		return nil, err
+	}
+	logger.Debug("[subscription] Loaded from string successfully, got %d sites.", len(conf))
+	return conf, nil
 }
 
 // ToJavaScriptCode 将 UnifiedSubscriptionConfig 转换为 JavaScript 格式的字符串。
@@ -233,4 +203,43 @@ func ToJavaScriptCode(config ApiSiteAndDefault) (string, error) {
 	buffer.WriteString(fmt.Sprintf("const DefaultSelectedAPISite = %s;\n", string(selectedSitesJson)))
 
 	return buffer.String(), nil
+}
+
+// SaveSubscriptionToDB 保存TOML字符串到vod_subscription表
+func SaveSubscriptionToDB(db *sql.DB, tomlStr string) error {
+	now := time.Now().Unix()
+	_, err := db.Exec(`INSERT INTO vod_subscription (id, data, lastlogin_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET data=excluded.data, lastlogin_at=excluded.lastlogin_at`, tomlStr, now)
+	return err
+}
+
+// LoadSubscriptionFromDB 从vod_subscription表加载并解析
+func LoadSubscriptionFromDB(db *sql.DB, logger *zap.SugaredLogger) (ApiSitesConfig, error) {
+	row := db.QueryRow(`SELECT data FROM vod_subscription WHERE id=1`)
+	var tomlStr string
+	if err := row.Scan(&tomlStr); err != nil {
+		return nil, err
+	}
+	return ReadSubscriptionConfigFromString(logger, tomlStr)
+}
+
+// MergeRemoteSubscriptions 拉取并合并远程订阅，返回结构和TOML字符串
+func MergeRemoteSubscriptions(urls []string, mirror string, logger *zap.SugaredLogger) (ApiSitesConfig, string, error) {
+	merged, err := FetchAndMergeSubscriptions(mirror, logger, urls)
+	if err != nil {
+		return nil, "", err
+	}
+	var buf bytes.Buffer
+	if err := toml.NewEncoder(&buf).Encode(merged); err != nil {
+		return nil, "", err
+	}
+	return merged, buf.String(), nil
+}
+
+// RefreshSubscriptionAndSaveToDB 拉取合并并写入DB
+func RefreshSubscriptionAndSaveToDB(db *sql.DB, urls []string, mirror string, logger *zap.SugaredLogger) error {
+	_, tomlStr, err := MergeRemoteSubscriptions(urls, mirror, logger)
+	if err != nil {
+		return err
+	}
+	return SaveSubscriptionToDB(db, tomlStr)
 }
