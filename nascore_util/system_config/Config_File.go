@@ -19,41 +19,11 @@ type SysCfg struct {
 	ThirdPartyExt ThirdPartyExtStru `mapstructure:"ThirdPartyExt"`
 }
 
-// 新增：VodCacheStru 类型
-// 影视缓存相关配置
-// [NascoreExt.vod.VodCache]
-type VodCacheStru struct {
-	DoubanExpire    int `mapstructure:"DoubanExpire"`
-	DoubanMax       int `mapstructure:"DoubanMax"`
-	OtherExpire     int `mapstructure:"OtherExpire"`
-	OtherMax        int `mapstructure:"OtherMax"`
-	VoddetailExpire int `mapstructure:"VoddetailExpire"`
-	VoddetailMax    int `mapstructure:"VoddetailMax"`
-	VodlistExpire   int `mapstructure:"VodlistExpire"`
-	VodlistMax      int `mapstructure:"VodlistMax"`
-}
-
-// 新增：VodSubscriptionStru 类型
-// 影视订阅相关配置
-// [NascoreExt.vod.VodSubscription]
-type VodSubscriptionStru struct {
-	DefaultSelectedAPISite []string `mapstructure:"DefaultSelectedAPISite"`
-	IntervalHour           int      `mapstructure:"IntervalHour"`
-	Urls                   []string `mapstructure:"Urls"`
-}
-
-// 修改 VodExtStru，使用类型字段
-// VodExtStru 影视订阅相关配置
-type VodExtStru struct {
-	IsNeedLoginUse  bool                `mapstructure:"IsNeedLoginUse"`
-	VodCache        VodCacheStru        `mapstructure:"VodCache"`
-	VodSubscription VodSubscriptionStru `mapstructure:"VodSubscription"`
-}
-
 type NascoreExtStru struct {
 	UserID  string     `mapstructure:"UserID"`
 	UserKey string     `mapstructure:"UserKey"`
 	Vod     VodExtStru `mapstructure:"Vod"`
+	Links   LinksStru  `mapstructure:"Links"`
 }
 
 type ThirdPartyExtStru struct {
@@ -252,26 +222,59 @@ func newDefaultJWTConfig() JwtStru {
 	}
 }
 
-// 新增：VodExtStru 默认值初始化函数
-func newDefaultVodExtStru() VodExtStru {
-	return VodExtStru{
-		IsNeedLoginUse: true,
-		VodCache: VodCacheStru{
-			DoubanExpire:    150,
-			DoubanMax:       50,
-			OtherExpire:     25,
-			OtherMax:        120,
-			VoddetailExpire: 120,
-			VoddetailMax:    120,
-			VodlistExpire:   150,
-			VodlistMax:      120,
+type VodCacheStru struct {
+	DoubanExpire    int `mapstructure:"DoubanExpire"`
+	DoubanMax       int `mapstructure:"DoubanMax"`
+	OtherExpire     int `mapstructure:"OtherExpire"`
+	OtherMax        int `mapstructure:"OtherMax"`
+	VoddetailExpire int `mapstructure:"VoddetailExpire"`
+	VoddetailMax    int `mapstructure:"VoddetailMax"`
+	VodlistExpire   int `mapstructure:"VodlistExpire"`
+	VodlistMax      int `mapstructure:"VodlistMax"`
+}
+
+type VodSubscriptionStru struct {
+	DefaultSelectedAPISite []string `mapstructure:"DefaultSelectedAPISite"`
+	IntervalHour           int      `mapstructure:"IntervalHour"`
+	Urls                   []string `mapstructure:"Urls"`
+}
+type LinksStru struct {
+	LinksEnable bool `mapstructure:"LinksEnable"`
+}
+type VodExtStru struct {
+	IsNeedLoginUse  bool                `mapstructure:"IsNeedLoginUse"`
+	VodEnable       bool                `mapstructure:"VodEnable"`
+	VodCache        VodCacheStru        `mapstructure:"VodCache"`
+	VodSubscription VodSubscriptionStru `mapstructure:"VodSubscription"`
+}
+
+func newNascoreExtStru() NascoreExtStru {
+	return NascoreExtStru{
+		UserID:  "username",
+		UserKey: "sdsds",
+		Links: LinksStru{
+			LinksEnable: true,
 		},
-		VodSubscription: VodSubscriptionStru{
-			DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
-			IntervalHour:           22,
-			Urls: []string{
-				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
-				"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
+		Vod: VodExtStru{
+			IsNeedLoginUse: true,
+			VodEnable:      true,
+			VodCache: VodCacheStru{
+				DoubanExpire:    150,
+				DoubanMax:       50,
+				OtherExpire:     25,
+				OtherMax:        120,
+				VoddetailExpire: 120,
+				VoddetailMax:    120,
+				VodlistExpire:   150,
+				VodlistMax:      120,
+			},
+			VodSubscription: VodSubscriptionStru{
+				DefaultSelectedAPISite: []string{"tyyszy", "bfzy", "dyttzy", "ruyi"},
+				IntervalHour:           22,
+				Urls: []string{
+					"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example1.toml",
+					"https://raw.githubusercontent.com/nas-core/nascore-website/refs/heads/main/docs/.vuepress/public/nascore_tv/subscription_example2.toml",
+				},
 			},
 		},
 	}
@@ -335,11 +338,7 @@ func NewDefaultConfig() *SysCfg {
 			AcmeLego:             newAcmeLegoConfig(),
 			Caddy2:               newCaddy2Config(),
 		},
-		NascoreExt: NascoreExtStru{
-			UserID:  "username",
-			UserKey: "sdsds",
-			Vod:     newDefaultVodExtStru(),
-		},
+		NascoreExt: newNascoreExtStru(),
 	}
 }
 
