@@ -25,6 +25,7 @@ type SiteConfig struct {
 	Name   string `toml:"name" json:"name"`
 	Detail string `toml:"detail,omitempty" json:"detail,omitempty"`
 	Adult  bool   `toml:"adult,omitempty" json:"adult,omitempty"`
+	Hidden bool   `toml:"hidden,omitempty" json:"hidden,omitempty"`
 }
 
 // ApiSitesConfig 包含所有站点的配置
@@ -162,16 +163,16 @@ func ToJavaScriptCode(config ApiSiteAndDefault) (string, error) {
 	// 存放非默认选中的站点键
 	var remainingKeys []string
 
-	// 优先添加默认选中的站点
+	// 优先添加默认选中的站点，过滤掉hidden=true的站点
 	for _, key := range config.DefaultSelectedAPISite {
-		if _, ok := config.ApiSites[key]; ok { // 确保站点存在
+		if site, ok := config.ApiSites[key]; ok && !site.Hidden { // 确保站点存在且不是隐藏的
 			orderedKeys = append(orderedKeys, key)
 		}
 	}
 
-	// 添加剩余的站点，并进行字母排序
-	for key := range config.ApiSites {
-		if !selectedSiteMap[key] {
+	// 添加剩余的站点，并进行字母排序，过滤掉hidden=true的站点
+	for key, site := range config.ApiSites {
+		if !selectedSiteMap[key] && !site.Hidden {
 			remainingKeys = append(remainingKeys, key)
 		}
 	}
@@ -195,8 +196,15 @@ func ToJavaScriptCode(config ApiSiteAndDefault) (string, error) {
 	}
 	buffer.WriteString("};\n")
 
-	// 添加 DefaultSelectedAPISite
-	selectedSitesJson, err := json.Marshal(config.DefaultSelectedAPISite)
+	// 添加 DefaultSelectedAPISite，过滤掉隐藏的站点
+	var filteredSelectedSites []string
+	for _, site := range config.DefaultSelectedAPISite {
+		if siteConfig, ok := config.ApiSites[site]; ok && !siteConfig.Hidden {
+			filteredSelectedSites = append(filteredSelectedSites, site)
+		}
+	}
+
+	selectedSitesJson, err := json.Marshal(filteredSelectedSites)
 	if err != nil {
 		return "", fmt.Errorf("无法 Marshal DefaultSelectedAPISite 到 JSON: %v", err)
 	}
