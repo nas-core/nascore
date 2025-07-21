@@ -2,6 +2,7 @@ package system_config
 
 import (
 	"log"
+	"runtime"
 
 	"github.com/spf13/viper"
 )
@@ -44,11 +45,17 @@ type OpenlistStru struct {
 }
 
 func newOpenlistStru() OpenlistStru {
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "./ThirdPartyExt/openlist.exe"
+	} else {
+		path = "./ThirdPartyExt/openlist"
+	}
 	return OpenlistStru{
 		DownLoadlink:    "https://github.com/OpenListTeam/OpenList/releases/download/v{ver}/openlist-{os}-{arch}.tar.gz",
 		Version:         "4.0.1",
-		BinPath:         "./openlist",
-		DataPath:        "./openlist_data",
+		BinPath:         path,
+		DataPath:        "./ThirdPartyExt/openlist_data",
 		AutoStartEnable: false,
 	}
 }
@@ -62,11 +69,17 @@ type Caddy2Stru struct {
 }
 
 func newCaddy2Config() Caddy2Stru {
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "./ThirdPartyExt/caddy.exe"
+	} else {
+		path = "./ThirdPartyExt/caddy"
+	}
 	return Caddy2Stru{ // https://github.com/caddyserver/caddy/releases/download/v2.10.0/caddy_2.10.0_linux_amd64.tar.gz
 		DownLoadlink:    "https://github.com/caddyserver/caddy/releases/download/v{ver}/caddy_{ver}_{os}_{arch}.tar.gz",
 		Version:         "2.10.0",
-		BinPath:         "./caddy", // 实际解压到 caddy_2.10.0_linux_amd64/caddy
-		ConfigPath:      "./Caddyfile",
+		BinPath:         path, // 实际解压到 caddy_2.10.0_linux_amd64/caddy
+		ConfigPath:      "./ThirdPartyExt/Caddyfile",
 		AutoStartEnable: false,
 	}
 }
@@ -82,12 +95,18 @@ type AcmeLegoStru struct {
 }
 
 func newAcmeLegoConfig() AcmeLegoStru {
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "./ThirdPartyExt/lego.exe"
+	} else {
+		path = "./ThirdPartyExt/lego"
+	}
 	return AcmeLegoStru{
 		IsLegoAutoRenew:         false,
 		DownLoadlink:            "https://github.com/go-acme/lego/releases/download/v{ver}/lego_v{ver}_{os}_{arch}.tar.gz",
 		Version:                 "4.23.1",
-		BinPath:                 "./lego",
-		LEGO_PATH:               "./lego_cert",
+		BinPath:                 path,
+		LEGO_PATH:               "./ThirdPartyExt/lego_cert",
 		AutoUpdateCheckInterval: 24,
 		Command: `
 LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
@@ -148,14 +167,20 @@ type DdnsgoStru struct {
 }
 
 func newDefaultDDSN() DdnsgoStru {
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "./ThirdPartyExt/ddns-go.exe"
+	} else {
+		path = "./ThirdPartyExt/ddns-go"
+	}
 	return DdnsgoStru{
 		AutoStartEnable:     false,
 		IsDDnsGOProxyEnable: false,
 		DownLoadlink:        "https://github.com/jeessy2/ddns-go/releases/download/v{ver}/ddns-go_{ver}_{os}_{arch}.tar.gz",
 		Version:             "6.11.0",
 		ReverseproxyUrl:     "http://localhost:9876/",
-		BinPath:             "./ddns-go",
-		ConfigFilePath:      "./ddnsgo_config.yaml",
+		BinPath:             path,
+		ConfigFilePath:      "./ThirdPartyExt/ddnsgo_config.yaml",
 	}
 }
 
@@ -352,10 +377,16 @@ type SecretStru struct {
 
 // 恢复 newDefaultRclone 函数
 func newDefaultRclone() RcloneExtStru {
+	var path string
+	if runtime.GOOS == "windows" {
+		path = "./ThirdPartyExt/rclone.exe"
+	} else {
+		path = "./ThirdPartyExt/rclone"
+	}
 	return RcloneExtStru{
 		DownLoadlink:    "https://github.com/rclone/rclone/releases/download/v{ver}/rclone-v{ver}-{os}-{arch}.zip",
 		Version:         "1.70.1",
-		BinPath:         "./rclone",
+		BinPath:         path,
 		AutoMountEnable: false,
 		AutoMountCommand: `
 ${BinPath} mount oss_qd: /home/yh/tmp/oss_qd --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
