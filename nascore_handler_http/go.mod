@@ -3,13 +3,16 @@ module github.com/nas-core/nascore/nascore_handler_http
 go 1.24.4
 
 require (
-	github.com/nas-core/nascore/nascore_util v0.0.0-20250715103251-52b517225618
+	github.com/nas-core/nascore/nascore_util v0.0.0-20250721194844-58d56d323f86
 	go.uber.org/zap v1.27.0
 )
+
+replace github.com/nas-core/nascore/nascore_util => ../nascore_util
 
 require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
+	github.com/joyanhui/golang-pkgs/pkgs/exePath v0.0.0-20250712102146-8780ed189b72 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
