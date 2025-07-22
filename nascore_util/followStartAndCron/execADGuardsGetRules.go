@@ -31,7 +31,7 @@ func DownloadADGuardRules(Upstream_dns_fileUpdateUrl *string, GitHubDownloadMirr
 	saveFilename := filepath.Base(*Upstream_dns_file)
 	SaveDir := filepath.Dir(*Upstream_dns_file)
 
-	err := downfile.DownloadFile(DownLoadlink, SaveDir, saveFilename)
+	_, err := downfile.DownloadFile(DownLoadlink, SaveDir, saveFilename)
 	if err != nil {
 		return err
 	}

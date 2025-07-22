@@ -38,7 +38,6 @@ type ThirdPartyExtStru struct {
 }
 type OpenlistStru struct {
 	AutoStartEnable bool   `mapstructure:"AutoStartEnable"`
-	DownLoadlink    string `mapstructure:"DownLoadlink"`
 	Version         string `mapstructure:"Version"`
 	BinPath         string `mapstructure:"BinPath"`
 	DataPath        string `mapstructure:"DataPath"`
@@ -52,7 +51,6 @@ func newOpenlistStru() OpenlistStru {
 		path = "./ThirdPartyExt/openlist"
 	}
 	return OpenlistStru{
-		DownLoadlink:    "https://github.com/OpenListTeam/OpenList/releases/download/v{ver}/openlist-{os}-{arch}.tar.gz",
 		Version:         "4.0.1",
 		BinPath:         path,
 		DataPath:        "./ThirdPartyExt/openlist_data",
@@ -62,7 +60,6 @@ func newOpenlistStru() OpenlistStru {
 
 type Caddy2Stru struct {
 	AutoStartEnable bool   `mapstructure:"AutoStartEnable"`
-	DownLoadlink    string `mapstructure:"DownLoadlink"`
 	Version         string `mapstructure:"Version"`
 	BinPath         string `mapstructure:"BinPath"`
 	ConfigPath      string `mapstructure:"ConfigPath"`
@@ -76,7 +73,6 @@ func newCaddy2Config() Caddy2Stru {
 		path = "./ThirdPartyExt/caddy"
 	}
 	return Caddy2Stru{ // https://github.com/caddyserver/caddy/releases/download/v2.10.0/caddy_2.10.0_linux_amd64.tar.gz
-		DownLoadlink:    "https://github.com/caddyserver/caddy/releases/download/v{ver}/caddy_{ver}_{os}_{arch}.tar.gz",
 		Version:         "2.10.0",
 		BinPath:         path, // 实际解压到 caddy_2.10.0_linux_amd64/caddy
 		ConfigPath:      "./ThirdPartyExt/Caddyfile",
@@ -86,7 +82,6 @@ func newCaddy2Config() Caddy2Stru {
 
 type AcmeLegoStru struct {
 	IsLegoAutoRenew         bool   `mapstructure:"IsLegoAutoRenew"`
-	DownLoadlink            string `mapstructure:"DownLoadlink"`
 	Version                 string `mapstructure:"Version"`
 	BinPath                 string `mapstructure:"BinPath"`
 	AutoUpdateCheckInterval int    `mapstructure:"AutoUpdateCheckInterval"` // 单位是小时
@@ -103,8 +98,7 @@ func newAcmeLegoConfig() AcmeLegoStru {
 	}
 	return AcmeLegoStru{
 		IsLegoAutoRenew:         false,
-		DownLoadlink:            "https://github.com/go-acme/lego/releases/download/v{ver}/lego_v{ver}_{os}_{arch}.tar.gz",
-		Version:                 "4.23.1",
+		Version:                 "4.25.1",
 		BinPath:                 path,
 		LEGO_PATH:               "./ThirdPartyExt/lego_cert",
 		AutoUpdateCheckInterval: 24,
@@ -149,7 +143,6 @@ func newAdGuardConfig() AdGuardStru {
 }
 
 type RcloneExtStru struct {
-	DownLoadlink       string `mapstructure:"DownLoadlink"`
 	AutoMountEnable    bool   `mapstructure:"AutoMountEnable"`
 	AutoMountCommand   string `mapstructure:"AutoMountCommand"`
 	AutoUnMountCommand string `mapstructure:"AutoUnMountCommand"`
@@ -162,7 +155,6 @@ type DdnsgoStru struct {
 	ReverseproxyUrl     string `mapstructure:"ReverseproxyUrl"`
 	ConfigFilePath      string `mapstructure:"ConfigFilePath"`
 	BinPath             string `mapstructure:"BinPath"`
-	DownLoadlink        string `mapstructure:"DownLoadlink"`
 	Version             string `mapstructure:"Version"`
 }
 
@@ -176,7 +168,6 @@ func newDefaultDDSN() DdnsgoStru {
 	return DdnsgoStru{
 		AutoStartEnable:     false,
 		IsDDnsGOProxyEnable: false,
-		DownLoadlink:        "https://github.com/jeessy2/ddns-go/releases/download/v{ver}/ddns-go_{ver}_{os}_{arch}.tar.gz",
 		Version:             "6.11.0",
 		ReverseproxyUrl:     "http://localhost:9876/",
 		BinPath:             path,
@@ -227,13 +218,12 @@ func newDefaultServerConfig() ServerStru {
 		WebDavEnable:      true,
 		ApiEnable:         true,
 
-		WebUIPrefix:                         "/@webui/",
-		WebuiAndApiEnable:                   true,
-		DefaultStaticFileServicePrefix:      "/@static/",
-		DefaultStaticFileServiceEnable:      true,
-		DefaultStaticFileServiceRoot:        "./static/",
-		DefaultStaticFileServiceDownloadUrl: "https://github.com/nas-core/nascore_static/archive/refs/heads/main.zip",
-		UnixSocketFilePath:                  unixSocketFilePath,
+		WebUIPrefix:                    "/@webui/",
+		WebuiAndApiEnable:              true,
+		DefaultStaticFileServicePrefix: "/@static/",
+		DefaultStaticFileServiceEnable: true,
+		DefaultStaticFileServiceRoot:   "./static/",
+		UnixSocketFilePath:             unixSocketFilePath,
 	}
 }
 
@@ -390,8 +380,7 @@ func newDefaultRclone() RcloneExtStru {
 		path = "./ThirdPartyExt/rclone"
 	}
 	return RcloneExtStru{
-		DownLoadlink:    "https://github.com/rclone/rclone/releases/download/v{ver}/rclone-v{ver}-{os}-{arch}.zip",
-		Version:         "1.70.1",
+		Version:         "1.70.3",
 		BinPath:         path,
 		AutoMountEnable: false,
 		AutoMountCommand: `

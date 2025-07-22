@@ -3,6 +3,7 @@ package hostinfo
 import (
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/shirou/gopsutil/host"
 )
@@ -35,10 +36,10 @@ func GetHostSystemInfo() (HostSystemInfo, error) {
 	systemInfo := HostSystemInfo{
 		Hostid:   hostInfo.HostID,
 		Hostname: hostInfo.Hostname,
-		OS:       runtime.GOOS,
-		Platform: hostInfo.Platform,
-		Arch:     runtime.GOARCH,
-		GoVer:    runtime.Version(),
+		OS:       strings.ToLower(runtime.GOOS),
+		Platform: strings.ToLower(hostInfo.Platform),
+		Arch:     strings.ToLower(runtime.GOARCH),
+		GoVer:    strings.ToLower(runtime.Version()),
 	}
 	return systemInfo, nil
 }
