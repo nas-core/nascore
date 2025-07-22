@@ -91,18 +91,25 @@ type AcmeLegoStru struct {
 
 func newAcmeLegoConfig() AcmeLegoStru {
 	var path string
+	var command string
 	if runtime.GOOS == "windows" {
 		path = "./ThirdPartyExt/lego.exe"
+		command = `
+set LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
+set LEGO_DEBUG_ACME_HTTP_CLIENT=true
+set LEGO_EMAIL=you@example.com
+set LEGO_PATH=${LEGO_PATH}
+
+set CF_DNS_API_TOKEN=b9841238feb177a84330febba8a83208921177bffe733
+${BinPath}  --dns cloudflare  -d example.com -d *.example.com --key-type ec256 run  &nascore
+set ALICLOUD_ACCESS_KEY=abcdefghijklmnopqrstuvwx
+set ALICLOUD_SECRET_KEY=your-secret-key
+${BinPath}  --dns alidns  -d example2.com -d *.example2.com --key-type ec256 run  &nascore
+
+`
 	} else {
 		path = "./ThirdPartyExt/lego"
-	}
-	return AcmeLegoStru{
-		IsLegoAutoRenew:         false,
-		Version:                 "4.25.1",
-		BinPath:                 path,
-		LEGO_PATH:               "./ThirdPartyExt/lego_cert",
-		AutoUpdateCheckInterval: 24,
-		Command: `
+		command = `
 LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
 LEGO_DEBUG_ACME_HTTP_CLIENT=true
 export LEGO_EMAIL="you@example.com"
@@ -114,7 +121,15 @@ export ALICLOUD_ACCESS_KEY=abcdefghijklmnopqrstuvwx
 export ALICLOUD_SECRET_KEY=your-secret-key
 ${BinPath}  --dns alidns  -d example2.com -d *.example2.com --key-type ec256 run  &nascore
 
-`,
+`
+	}
+	return AcmeLegoStru{
+		IsLegoAutoRenew:         false,
+		Version:                 "4.25.1",
+		BinPath:                 path,
+		LEGO_PATH:               "./ThirdPartyExt/lego_cert",
+		AutoUpdateCheckInterval: 24,
+		Command:                 command,
 	}
 }
 
