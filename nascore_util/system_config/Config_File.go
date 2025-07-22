@@ -211,6 +211,12 @@ type LimitStru struct {
 }
 
 func newDefaultServerConfig() ServerStru {
+	var unixSocketFilePath string
+	if runtime.GOOS == "windows" {
+		unixSocketFilePath = "C:/Windows/Temp/nascore_socket/"
+	} else {
+		unixSocketFilePath = "/tmp/nascore_socket/"
+	}
 	return ServerStru{
 		HttpPort:          9000,
 		HttpsEnable:       false,
@@ -227,7 +233,7 @@ func newDefaultServerConfig() ServerStru {
 		DefaultStaticFileServiceEnable:      true,
 		DefaultStaticFileServiceRoot:        "./static/",
 		DefaultStaticFileServiceDownloadUrl: "https://github.com/nas-core/nascore_static/archive/refs/heads/main.zip",
-		UnixSocketFilePath:                  "/tmp/nascore_socket/",
+		UnixSocketFilePath:                  unixSocketFilePath,
 	}
 }
 
