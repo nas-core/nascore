@@ -7,6 +7,7 @@ import (
 
 const (
 	PrefixApi         = "/@api/"         // 固定
+	PrefixAdminApi    = "/@adminapi/"    // 固定
 	PrefixDdnsGo      = "/@ddnsgo/"      // 固定
 	PrefixAdguardhome = "/@adguardhome/" // 固定
 	PrefixNasCoreTv   = "/@nascore_vod/" // 固定
