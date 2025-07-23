@@ -12,6 +12,7 @@ import (
 )
 
 func execLegoRenewOrGet(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
+	legoLogFile := nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH + ".log"
 	commandStr := nsCfg.ThirdPartyExt.AcmeLego.Command
 	commandStr = strings.ReplaceAll(commandStr, "${BinPath}", nsCfg.ThirdPartyExt.AcmeLego.BinPath)
 	commandStr = strings.ReplaceAll(commandStr, "${LEGO_PATH}", nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH)
@@ -19,6 +20,26 @@ func execLegoRenewOrGet(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) 
 	logger.Debug(" execLegoCommand err len", len(errArr), " err ", errArr)
 	logger.Debug(" execLegoCommand stdoutArr len ", len(stdoutArr), " stdoutArr", stdoutArr)
 	logger.Debug(" execLegoCommand stdoutArr len", len(stderrArr), " stderrArr ", stderrArr)
+
+	// 将 stdout 和 stderr 追加写入 legoLogFile
+	if len(stdoutArr) > 0 || len(stderrArr) > 0 {
+		f, err := os.OpenFile(legoLogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err == nil {
+			defer f.Close()
+			for _, line := range stdoutArr {
+				if line != "" {
+					f.WriteString("[stdout] " + line + "\n")
+				}
+			}
+			for _, line := range stderrArr {
+				if line != "" {
+					f.WriteString("[stderr] " + line + "\n")
+				}
+			}
+		} else {
+			logger.Error("[lego] open log file failed", err)
+		}
+	}
 }
 
 func exeRcloneAutoMount(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
