@@ -170,6 +170,7 @@ type RcloneExtStru struct {
 	AutoUnMountCommand string `mapstructure:"AutoUnMountCommand"`
 	Version            string `mapstructure:"Version"`
 	BinPath            string `mapstructure:"BinPath"`
+	ConfigFilePath     string `mapstructure:"ConfigFilePath"`
 }
 type DdnsgoStru struct {
 	AutoStartEnable     bool   `mapstructure:"AutoStartEnable"`
@@ -396,23 +397,39 @@ type SecretStru struct {
 // 恢复 newDefaultRclone 函数
 func newDefaultRclone() RcloneExtStru {
 	var path string
+	var autoMountCommand string
+	var autoUnMountCommand string
+	var configFilePath string
 	if runtime.GOOS == "windows" {
 		path = "./ThirdPartyExt/rclone.exe"
+		configFilePath = "N:/Scoop/apps/rclone/current/rclone.conf"
+		autoMountCommand = `
+${BinPath} mount oss_qd: D:/test/rclone/oss_qd --vfs-cache-mode writes --allow-non-empty ${ConfigFilePath} &nascore
+${BinPath} mount jianguoyun: D:/test/rclone/jianguoyun --vfs-cache-mode writes --allow-non-empty ${ConfigFilePath} &nascore
+`
+		autoUnMountCommand = `
+net use  D:/test/rclone/jianguoyun  /delete &nascore
+net use  D:/test/rclone/oss_qd   /delete &nascore
+`
 	} else {
 		path = "./ThirdPartyExt/rclone"
-	}
-	return RcloneExtStru{
-		Version:         "1.70.3",
-		BinPath:         path,
-		AutoMountEnable: false,
-		AutoMountCommand: `
-${BinPath} mount oss_qd: /home/yh/tmp/oss_qd --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
-${BinPath}  mount jianguoyun: /home/yh/tmp/jianguoyun --vfs-cache-mode writes --allow-non-empty  --config=/home/yh/.config/rclone/rclone.conf &nascore
-`,
-		AutoUnMountCommand: `
+		configFilePath = "./ThirdPartyExt/rclone.conf"
+		autoMountCommand = `
+${BinPath} mount oss_qd: /home/yh/tmp/oss_qd --vfs-cache-mode writes --allow-non-empty ${ConfigFilePath} &nascore
+${BinPath}  mount jianguoyun: /home/yh/tmp/jianguoyun --vfs-cache-mode writes --allow-non-empty ${ConfigFilePath} &nascore
+`
+		autoUnMountCommand = `
 fusermount3 -u /home/yh/tmp &nascore
 fusermount3 -u /home/yh/jianguoyun &nascore
 fusermount3 -u /home/yh/oss_qd &nascore
-`,
+`
+	}
+	return RcloneExtStru{
+		Version:            "1.70.3",
+		BinPath:            path,
+		ConfigFilePath:     configFilePath,
+		AutoMountEnable:    false,
+		AutoMountCommand:   autoMountCommand,
+		AutoUnMountCommand: autoUnMountCommand,
 	}
 }

@@ -27,6 +27,11 @@ func exeRcloneAutoMount(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) 
 	commandStr1 := nsCfg.ThirdPartyExt.Rclone.AutoUnMountCommand
 	commandStr2 := nsCfg.ThirdPartyExt.Rclone.AutoMountCommand
 	commandStr2 = strings.ReplaceAll(commandStr2, "${BinPath}", nsCfg.ThirdPartyExt.Rclone.BinPath)
+	if nsCfg.ThirdPartyExt.Rclone.ConfigFilePath != "" {
+		commandStr2 = strings.ReplaceAll(commandStr2, "${ConfigFilePath}", "--config="+nsCfg.ThirdPartyExt.Rclone.ConfigFilePath)
+	} else {
+		commandStr2 = strings.ReplaceAll(commandStr2, "${ConfigFilePath}", "")
+	}
 
 	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr1, logger, "")
 	logger.Debug(" exeRcloneAutoUnMount err len", len(errArr), " err ", errArr)
