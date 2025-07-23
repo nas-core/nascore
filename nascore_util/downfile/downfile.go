@@ -98,6 +98,6 @@ func DownloadFile(urlStr string, saveDir string, saveName string) (string, error
 	if err != nil {
 		return "", fmt.Errorf("down file get file abs path err: %w", err)
 	}
-	fmt.Printf("down file abs path: %s\n", absPath)
+	fmt.Printf("down file abs path: %s file size: %d bit\n", absPath, fileInfo.Size())
 	return absPath, nil
 }
