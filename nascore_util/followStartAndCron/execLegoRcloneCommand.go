@@ -12,34 +12,15 @@ import (
 )
 
 func execLegoRenewOrGet(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
-	legoLogFile := nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH + ".log"
+	legoLogFile := nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH + "/lego_execLegoRenewOrGet.log"
 	commandStr := nsCfg.ThirdPartyExt.AcmeLego.Command
 	commandStr = strings.ReplaceAll(commandStr, "${BinPath}", nsCfg.ThirdPartyExt.AcmeLego.BinPath)
 	commandStr = strings.ReplaceAll(commandStr, "${LEGO_PATH}", nsCfg.ThirdPartyExt.AcmeLego.LEGO_PATH)
-	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr, logger)
+	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr, logger, legoLogFile)
 	logger.Debug(" execLegoCommand err len", len(errArr), " err ", errArr)
 	logger.Debug(" execLegoCommand stdoutArr len ", len(stdoutArr), " stdoutArr", stdoutArr)
 	logger.Debug(" execLegoCommand stdoutArr len", len(stderrArr), " stderrArr ", stderrArr)
 
-	// 将 stdout 和 stderr 追加写入 legoLogFile
-	if len(stdoutArr) > 0 || len(stderrArr) > 0 {
-		f, err := os.OpenFile(legoLogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-		if err == nil {
-			defer f.Close()
-			for _, line := range stdoutArr {
-				if line != "" {
-					f.WriteString("[stdout] " + line + "\n")
-				}
-			}
-			for _, line := range stderrArr {
-				if line != "" {
-					f.WriteString("[stderr] " + line + "\n")
-				}
-			}
-		} else {
-			logger.Error("[lego] open log file failed", err)
-		}
-	}
 }
 
 func exeRcloneAutoMount(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) {
@@ -47,17 +28,17 @@ func exeRcloneAutoMount(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) 
 	commandStr2 := nsCfg.ThirdPartyExt.Rclone.AutoMountCommand
 	commandStr2 = strings.ReplaceAll(commandStr2, "${BinPath}", nsCfg.ThirdPartyExt.Rclone.BinPath)
 
-	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr1, logger)
+	stdoutArr, stderrArr, errArr := excMultiLineCommand_Sequentially(&commandStr1, logger, "")
 	logger.Debug(" exeRcloneAutoUnMount err len", len(errArr), " err ", errArr)
 	logger.Debug(" exeRcloneAutoUnMount stdoutArr len ", len(stdoutArr), " stdoutArr", stdoutArr)
 	logger.Debug(" exeRcloneAutoUnMount stdoutArr len", len(stderrArr), " stderrArr ", stderrArr)
-	stdoutArr, stderrArr, errArr = excMultiLineCommand_Sequentially(&commandStr2, logger)
+	stdoutArr, stderrArr, errArr = excMultiLineCommand_Sequentially(&commandStr2, logger, "")
 	logger.Debug(" exeRcloneAutoMount err len", len(errArr), " err ", errArr)
 	logger.Debug(" exeRcloneAutoMount stdoutArr len ", len(stdoutArr), " stdoutArr", stdoutArr)
 	logger.Debug(" exeRcloneAutoMount stdoutArr len", len(stderrArr), " stderrArr ", stderrArr)
 }
 
-func excMultiLineCommand_Sequentially(commandStr *string, logger *zap.SugaredLogger) (stdoutArr []string, stderrArr []string, errArr []error) {
+func excMultiLineCommand_Sequentially(commandStr *string, logger *zap.SugaredLogger, logFile string) (stdoutArr []string, stderrArr []string, errArr []error) {
 	lines := strings.Split(*commandStr, "\n")
 	var envs []string
 	for _, line := range lines {
@@ -67,8 +48,11 @@ func excMultiLineCommand_Sequentially(commandStr *string, logger *zap.SugaredLog
 		if line == "" {
 			continue
 		}
+		// 兼容 export 和 windows 下 set 方式设置环境变量
 		if envVar, ok := strings.CutPrefix(line, "export "); ok {
-			envs = append(envs, envVar) // 解析环境变量
+			envs = append(envs, envVar)
+		} else if envVar, ok := strings.CutPrefix(line, "set "); ok { // 解析 windows 下 set 方式的环境变量
+			envs = append(envs, envVar)
 		} else {
 			parts := strings.Fields(line) // 使用 Fields 分割命令和参数
 			if len(parts) > 0 {
@@ -88,14 +72,15 @@ func excMultiLineCommand_Sequentially(commandStr *string, logger *zap.SugaredLog
 			cmd.Stderr = &stderr
 			if strings.HasSuffix(strings.TrimSpace(line), "&nascore") { // 检查是否以 &nascore 结尾
 				logger.Debug("MultiLineCommand Asynchronous execution   ", line)
-				go func() { // 使用 goroutine 执行命令
+				go func(cmdLine string) { // 使用 goroutine 执行命令
 					err := cmd.Run()
 					if err != nil {
 						errArr = append(errArr, err)
 					}
 					stdoutArr = append(stdoutArr, stdout.String())
 					stderrArr = append(stderrArr, stderr.String())
-				}()
+					writeLogToFile(logFile, cmdLine, stdout.String(), stderr.String())
+				}(line)
 			} else {
 				logger.Debug("MultiLineCommand Sequential execution   ", line)
 
@@ -105,8 +90,26 @@ func excMultiLineCommand_Sequentially(commandStr *string, logger *zap.SugaredLog
 				}
 				stdoutArr = append(stdoutArr, stdout.String())
 				stderrArr = append(stderrArr, stderr.String())
+				writeLogToFile(logFile, line, stdout.String(), stderr.String())
 			}
 		}
 	}
 	return stdoutArr, stderrArr, errArr
+}
+
+// writeLogToFile 将命令执行的输出写入到指定日志文件
+func writeLogToFile(logFile, cmdLine, outStr, errStr string) {
+	if logFile != "" {
+		f, ferr := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if ferr == nil {
+			defer f.Close()
+			f.WriteString("\n[cmd] " + cmdLine + "\n")
+			if outStr != "" {
+				f.WriteString("[stdout]\n" + outStr + "\n")
+			}
+			if errStr != "" {
+				f.WriteString("[stderr]\n" + errStr + "\n")
+			}
+		}
+	}
 }

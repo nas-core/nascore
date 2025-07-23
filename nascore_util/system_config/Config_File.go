@@ -99,28 +99,35 @@ set LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
 set LEGO_DEBUG_ACME_HTTP_CLIENT=true
 set LEGO_EMAIL=you@example.com
 set LEGO_PATH=${LEGO_PATH}
-
-set CF_DNS_API_TOKEN=b9841238feb177a84330febba8a83208921177bffe733
-${BinPath}  --dns cloudflare  -d example.com -d *.example.com --key-type ec256 run  &nascore
+set CF_DNS_API_TOKEN=your-api-token
+set LEGO_SERVER=https://acme.zerossl.com/v2/DV90
+set LEGO_EAB_HMAC=your-hmac
+set LEGO_EAB_KID=your-kid
+${BinPath} --accept-tos  --dns cloudflare  -d exp1.com -d *.exp1.com  --eab -k ec256 renew &nascore
 set ALICLOUD_ACCESS_KEY=abcdefghijklmnopqrstuvwx
 set ALICLOUD_SECRET_KEY=your-secret-key
-${BinPath}  --dns alidns  -d example2.com -d *.example2.com --key-type ec256 run  &nascore
-
+${BinPath} --accept-tos  --dns alidns  -d exp2.com -d *.exp2.com --eab -k ec256 renew &nascore
+set CF_DNS_API_TOKEN=your-api-token2
+${BinPath} --accept-tos  --dns cloudflare  -d exp3.com -d '*.exp3.com' --eab -k ec256 renew &nascore
 `
+
 	} else {
 		path = "./ThirdPartyExt/lego"
 		command = `
-LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
-LEGO_DEBUG_ACME_HTTP_CLIENT=true
-export LEGO_EMAIL="you@example.com"
+export LEGO_DEBUG_CLIENT_VERBOSE_ERROR=true
+export LEGO_DEBUG_ACME_HTTP_CLIENT=true
+export LEGO_EMAIL=you@example.com
 export LEGO_PATH=${LEGO_PATH}
-
-export CF_DNS_API_TOKEN=b9841238feb177a84330febba8a83208921177bffe733
-${BinPath}  --dns cloudflare  -d example.com -d *.example.com --key-type ec256 run  &nascore
+export CF_DNS_API_TOKEN=your-api-token
+export LEGO_SERVER=https://acme.zerossl.com/v2/DV90
+export LEGO_EAB_HMAC=your-hmac
+export LEGO_EAB_KID=your-kid
+${BinPath} --accept-tos  --dns cloudflare  -d exp1.com -d *.exp1.com  --eab -k ec256 renew &nascore
 export ALICLOUD_ACCESS_KEY=abcdefghijklmnopqrstuvwx
 export ALICLOUD_SECRET_KEY=your-secret-key
-${BinPath}  --dns alidns  -d example2.com -d *.example2.com --key-type ec256 run  &nascore
-
+${BinPath} --accept-tos  --dns alidns  -d exp2.com -d *.exp2.com --eab -k ec256 renew &nascore
+export CF_DNS_API_TOKEN=your-api-token2
+${BinPath} --accept-tos  --dns cloudflare  -d exp3.com -d '*.exp3.com' --eab -k ec256 renew &nascore
 `
 	}
 	return AcmeLegoStru{
