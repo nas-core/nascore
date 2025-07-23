@@ -1,6 +1,8 @@
 package followStartAndCron
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/nas-core/nascore/nascore_util/system_config"
@@ -9,17 +11,23 @@ import (
 )
 
 func DdnsSGOFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (err error) {
-	cmd := exec.Command(nsCfg.ThirdPartyExt.DdnsGO.BinPath, "-c", nsCfg.ThirdPartyExt.DdnsGO.ConfigFilePath)
-	output, err := cmd.CombinedOutput()
+	binPath := nsCfg.ThirdPartyExt.DdnsGO.BinPath
+	configPath := nsCfg.ThirdPartyExt.DdnsGO.ConfigFilePath
+	cmd := exec.Command(binPath, "-c", configPath)
+	err = cmd.Start()
 	if err != nil {
-		if output != nil {
-			logger.Warn("DdnsSGOFollowStart output: %v", string(output))
-		}
-		logger.Warn("DdnsSGOFollowStart failed: %v", err)
+		logger.Error("DdnsSGOFollowStart failed: %v", err)
 		return err
 	}
-	logger.Debug("DdnsSGOFollowStart output: %s", string(output))
-
+	// 生成pid文件路径：配置文件路径+.pid
+	pidFile := configPath + ".pid"
+	pidStr := fmt.Sprintf("%d", cmd.Process.Pid)
+	os.WriteFile(pidFile, []byte(pidStr), 0644)
+	go func() {
+		cmd.Wait()
+		os.Remove(pidFile)
+	}()
+	logger.Debug("DdnsSGOFollowStart started, pid: %s, pidfile: %s", pidStr, pidFile)
 	return nil
 }
 
