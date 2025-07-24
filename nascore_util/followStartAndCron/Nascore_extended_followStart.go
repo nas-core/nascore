@@ -18,9 +18,8 @@ import (
 
 // Nascore_extended_followStart 扩展的启动跟踪函数
 func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (err error) {
-	socketFilePathValue := nsCfg.Server.TempFilePath
-	if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
-		socketFilePathValue += "/"
+	if len(nsCfg.Server.TempFilePath) > 0 && nsCfg.Server.TempFilePath[len(nsCfg.Server.TempFilePath)-1] != '/' {
+		nsCfg.Server.TempFilePath += "/"
 	}
 
 	var searchPaths []string
@@ -94,7 +93,7 @@ func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.Sugar
 
 			switch {
 			case strings.Contains(strings.ToLower(fileName), "tv"), strings.Contains(strings.ToLower(fileName), "vod"):
-				cmdParams := []string{"-s", socketFilePathValue + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
+				cmdParams := []string{"-s", nsCfg.Server.TempFilePath + system_config.ExtensionSocketMap["nascore_vod"], "-githubDownloadMirror", nsCfg.ThirdPartyExt.GitHubDownloadMirror}
 				logger.Debug("[nascore] 🔹Starting execution: %s, parameters: %v", filePath, cmdParams)
 				executeIfMatching(filePath, fileName, cmdParams, logger)
 			default:
