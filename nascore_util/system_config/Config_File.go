@@ -211,12 +211,12 @@ type ServerStru struct {
 	WebuiAndApiEnable bool   `mapstructure:"WebuiAndApiEnable"`
 	ApiEnable         bool   `mapstructure:"ApiEnable"`
 	WebDavEnable      bool   `mapstructure:"WebDavEnable"`
+	TempFilePath      string `mapstructure:"TempFilePath"`
 
 	DefaultStaticFileServicePrefix      string `mapstructure:"DefaultStaticFileService"`
 	DefaultStaticFileServiceEnable      bool   `mapstructure:"DefaultStaticFileServiceEnable"`
 	DefaultStaticFileServiceRoot        string `mapstructure:"DefaultStaticFileServiceRoot"`
 	DefaultStaticFileServiceDownloadUrl string `mapstructure:"DefaultStaticFileServiceDownloadUrl"`
-	UnixSocketFilePath                  string `mapstructure:"UnixSocketFilePath"`
 }
 type LimitStru struct {
 	OnlineEditMaxSizeKB        int64 `mapstructure:"OnlineEditMaxSizeKB"`
@@ -225,28 +225,28 @@ type LimitStru struct {
 }
 
 func newDefaultServerConfig() ServerStru {
-	var unixSocketFilePath string
+	var tempFilePath string
 	if runtime.GOOS == "windows" {
-		unixSocketFilePath = "C:/Windows/Temp/nascore_socket/"
+		tempFilePath = "C:/Windows/Temp/nascore_socket/"
 	} else {
-		unixSocketFilePath = "/tmp/nascore_socket/"
+		tempFilePath = "/tmp/nascore_socket/"
 	}
 	return ServerStru{
 		HttpPort:          9000,
 		HttpsEnable:       false,
 		HttpsPort:         8181,
-		TlsCert:           "cert.pem",
-		TlsKey:            "key.pem",
+		TlsCert:           "domain.crt",
+		TlsKey:            "domain.key",
 		IsRunInServerLess: false,
 		WebDavEnable:      true,
 		ApiEnable:         true,
+		TempFilePath:      tempFilePath,
 
 		WebUIPrefix:                    "/@webui/",
 		WebuiAndApiEnable:              true,
 		DefaultStaticFileServicePrefix: "/@static/",
 		DefaultStaticFileServiceEnable: true,
 		DefaultStaticFileServiceRoot:   "./static/",
-		UnixSocketFilePath:             unixSocketFilePath,
 	}
 }
 

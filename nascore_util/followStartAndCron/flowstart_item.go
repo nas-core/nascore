@@ -20,7 +20,7 @@ func DdnsSGOFollowStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) 
 		return err
 	}
 	// 生成pid文件路径：配置文件路径+.pid
-	pidFile := configPath + ".pid"
+	pidFile := nsCfg.Server.TempFilePath + "ddnsgo.pid"
 	pidStr := fmt.Sprintf("%d", cmd.Process.Pid)
 	os.WriteFile(pidFile, []byte(pidStr), 0644)
 	go func() {

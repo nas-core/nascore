@@ -18,7 +18,7 @@ import (
 
 // Nascore_extended_followStart 扩展的启动跟踪函数
 func Nascore_extended_followStart(nsCfg *system_config.SysCfg, logger *zap.SugaredLogger) (err error) {
-	socketFilePathValue := nsCfg.Server.UnixSocketFilePath
+	socketFilePathValue := nsCfg.Server.TempFilePath
 	if len(socketFilePathValue) > 0 && socketFilePathValue[len(socketFilePathValue)-1] != '/' {
 		socketFilePathValue += "/"
 	}
@@ -135,7 +135,7 @@ func executeIfMatching(filePath string, fileName string, cmdParams []string, log
 
 func CheckAllExtensionStatusOnce(nsCfg *system_config.SysCfg) {
 	for extName, socketFile := range system_config.ExtensionSocketMap {
-		socketPath := nsCfg.Server.UnixSocketFilePath
+		socketPath := nsCfg.Server.TempFilePath
 		if len(socketPath) > 0 && socketPath[len(socketPath)-1] != '/' && socketPath[len(socketPath)-1] != '\\' {
 			socketPath += "/"
 		}
