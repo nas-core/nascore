@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"html/template" // 引入 html/template 包
 	"net/http"
-	"strings"
+
+	"github.com/nas-core/WebUi/pkgs/replacetemplateplaceholders"
 )
 
 //go:embed RenderPage.html
@@ -33,12 +34,6 @@ type errorPageData struct {
 	WebUICdnPrefix     string
 }
 
-// ReplaceTemplatePlaceholders 替换模板中的占位符
-func ReplaceTemplatePlaceholders(content string, webUICdnPrefix string) string {
-	content = strings.ReplaceAll(content, "{{.WebUICdnPrefix}}", webUICdnPrefix)
-	return content
-}
-
 // RenderPage 生成并写入一个美观的 HTML 页面
 // title：页面标题。
 // englishDescription：英文错误描述。
@@ -62,6 +57,6 @@ func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescrip
 		http.Error(w, "Internal Server Error by RenderPage", http.StatusInternalServerError)
 		return
 	}
-	parsedContent := ReplaceTemplatePlaceholders(tplBuf.String(), webUICdnPrefix)
+	parsedContent := replacetemplateplaceholders.ReplaceTemplatePlaceholders(tplBuf.String(), webUICdnPrefix, "")
 	w.Write([]byte(parsedContent))
 }
