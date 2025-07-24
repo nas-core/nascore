@@ -1,10 +1,12 @@
 package index_and_favicon
 
 import (
+	"bytes"
 	"embed" // 引入 embed 包
 	"fmt"
 	"html/template" // 引入 html/template 包
 	"net/http"
+	"strings"
 )
 
 //go:embed RenderPage.html
@@ -28,13 +30,21 @@ type errorPageData struct {
 	ChineseDescription string
 	GotoLink           string
 	GotoText           string
+	WebUICdnPrefix     string
+}
+
+// ReplaceTemplatePlaceholders 替换模板中的占位符
+func ReplaceTemplatePlaceholders(content string, webUICdnPrefix string) string {
+	content = strings.ReplaceAll(content, "{{.WebUICdnPrefix}}", webUICdnPrefix)
+	return content
 }
 
 // RenderPage 生成并写入一个美观的 HTML 页面
 // title：页面标题。
 // englishDescription：英文错误描述。
 // chineseDescription：中文错误描述。
-func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescription, GotoLink, GotoText string) {
+// webUICdnPrefix：前端CDN前缀。
+func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescription, GotoLink, GotoText, webUICdnPrefix string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	data := errorPageData{
@@ -43,12 +53,15 @@ func RenderPage(w http.ResponseWriter, title, englishDescription, chineseDescrip
 		ChineseDescription: chineseDescription,
 		GotoLink:           GotoLink,
 		GotoText:           GotoText,
+		WebUICdnPrefix:     webUICdnPrefix,
 	}
 
-	// 执行模板并写入响应
-	err := errorPageTemplate.Execute(w, data)
+	var tplBuf bytes.Buffer
+	err := errorPageTemplate.Execute(&tplBuf, data)
 	if err != nil {
 		http.Error(w, "Internal Server Error by RenderPage", http.StatusInternalServerError)
 		return
 	}
+	parsedContent := ReplaceTemplatePlaceholders(tplBuf.String(), webUICdnPrefix)
+	w.Write([]byte(parsedContent))
 }
