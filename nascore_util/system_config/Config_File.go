@@ -210,10 +210,9 @@ type ServerStru struct {
 	WebDavEnable      bool   `mapstructure:"WebDavEnable"`
 	TempFilePath      string `mapstructure:"TempFilePath"`
 
-	DefaultStaticFileServicePrefix      string `mapstructure:"DefaultStaticFileService"`
-	DefaultStaticFileServiceEnable      bool   `mapstructure:"DefaultStaticFileServiceEnable"`
-	DefaultStaticFileServiceRoot        string `mapstructure:"DefaultStaticFileServiceRoot"`
-	DefaultStaticFileServiceDownloadUrl string `mapstructure:"DefaultStaticFileServiceDownloadUrl"`
+	DefaultStaticFileServicePrefix string `mapstructure:"DefaultStaticFileService"`
+	DefaultStaticFileServiceEnable bool   `mapstructure:"DefaultStaticFileServiceEnable"`
+	DefaultStaticFileServiceRoot   string `mapstructure:"DefaultStaticFileServiceRoot"`
 }
 type LimitStru struct {
 	OnlineEditMaxSizeKB        int64 `mapstructure:"OnlineEditMaxSizeKB"`
