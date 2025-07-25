@@ -25,7 +25,7 @@ func GenerateStr(typeInt int) string {
 		io.WriteString(h, baseStr+tmpHash)
 		baseStr = fmt.Sprintf("%x", h.Sum(nil))
 	case 3:
-		io.WriteString(h, baseStr+tmpHash+"https://nascore.eu.org/api/")
+		io.WriteString(h, baseStr+tmpHash+"https://api.nascore.eu.org")
 		baseStr = fmt.Sprintf("%x", h.Sum(nil))
 	}
 	return baseStr
@@ -36,11 +36,20 @@ func EnsureDirPathSuffix(path string) string {
 	if path == "" {
 		return path
 	}
+	lastSlash := strings.LastIndex(path, "/")
+	lastBackslash := strings.LastIndex(path, "\\")
 	var suf string
-	if runtime.GOOS == "windows" || (len(path) > 0 && path[len(path)-1] == '\\') {
-		suf = `\\`
-	} else {
+	if lastSlash > lastBackslash {
 		suf = `/`
+	} else if lastBackslash > lastSlash {
+		suf = `\`
+	} else {
+		// 都没有分隔符，按操作系统默认
+		if runtime.GOOS == "windows" {
+			suf = `\`
+		} else {
+			suf = `/`
+		}
 	}
 	if !strings.HasSuffix(path, suf) {
 		return path + suf
